@@ -1,10 +1,10 @@
-package manta
+package stingray
 
 import (
 	"os"
 	"testing"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/stretchr/testify/assert"
 )
 

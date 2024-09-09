@@ -1,9 +1,9 @@
-package manta
+package stingray
 
 import (
 	"testing"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 )

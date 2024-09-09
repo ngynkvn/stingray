@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 var gameBuildRegexp = regexp.MustCompile(`/dota_v(\d+)/`)

@@ -1,10 +1,10 @@
-package manta
+package stingray
 
 import (
 	"bytes"
 	"fmt"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 const (

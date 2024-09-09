@@ -1,9 +1,9 @@
-package manta
+package stingray
 
 import (
 	"io"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 const buffer = 1024 * 100

@@ -1,11 +1,11 @@
-package manta
+package stingray
 
 import (
 	"bytes"
 	"fmt"
 	"io"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/golang/snappy"
 )
 

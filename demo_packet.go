@@ -1,9 +1,9 @@
-package manta
+package stingray
 
 import (
 	"sort"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 // A message that has been read from an outerMessage but not yet processed.

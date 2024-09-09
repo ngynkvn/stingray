@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 // Decompress a Valve LZSS compressed buffer
 func unlzss(buf []byte) ([]byte, error) {

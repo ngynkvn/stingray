@@ -1,7 +1,7 @@
-package manta
+package stingray
 
 import (
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/golang/snappy"
 )
 

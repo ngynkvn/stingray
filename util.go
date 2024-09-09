@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 import (
 	"encoding/json"
