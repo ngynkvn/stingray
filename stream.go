@@ -45,9 +45,9 @@ func (s *stream) readByte() (byte, error) {
 }
 
 // readCommand reads a varuint32 as an EDemoCommands
-func (s *stream) readCommand() (dota.EDemoCommands, error) {
+func (s *stream) readCommand() (deadlock.EDemoCommands, error) {
 	c, err := s.readVarUint32()
-	return dota.EDemoCommands(c), err
+	return deadlock.EDemoCommands(c), err
 }
 
 // readVarUint32 reads an unsigned 32-bit varint

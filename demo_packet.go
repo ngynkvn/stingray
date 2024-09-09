@@ -19,22 +19,22 @@ func (m *pendingMessage) priority() int {
 	case
 		// These messages provide context needed for the rest of the tick
 		// and should have the highest priority.
-		int32(dota.NET_Messages_net_Tick),
-		int32(dota.SVC_Messages_svc_CreateStringTable),
-		int32(dota.SVC_Messages_svc_UpdateStringTable),
-		int32(dota.NET_Messages_net_SpawnGroup_Load):
+		int32(deadlock.NET_Messages_net_Tick),
+		int32(deadlock.SVC_Messages_svc_CreateStringTable),
+		int32(deadlock.SVC_Messages_svc_UpdateStringTable),
+		int32(deadlock.NET_Messages_net_SpawnGroup_Load):
 		return -10
 
 	case
 		// These messages benefit from having context but may also need to
 		// provide context in terms of delta updates.
-		int32(dota.SVC_Messages_svc_PacketEntities):
+		int32(deadlock.SVC_Messages_svc_PacketEntities):
 		return 5
 
 	case
 		// These messages benefit from having as much context as possible and
 		// should have the lowest priority.
-		int32(dota.EBaseGameEvents_GE_Source1LegacyGameEvent):
+		int32(deadlock.EBaseGameEvents_GE_Source1LegacyGameEvent):
 		return 10
 	}
 
@@ -59,7 +59,7 @@ func (ms pendingMessages) Less(i, j int) bool {
 // Internal parser for callback OnCDemoPacket, responsible for extracting
 // multiple inner packets from a single CDemoPacket. This is the main structure
 // that contains all other data types in the demo file.
-func (p *Parser) onCDemoPacket(m *dota.CDemoPacket) error {
+func (p *Parser) onCDemoPacket(m *deadlock.CDemoPacket) error {
 	// Create a slice to store pending mesages. Messages are read first as
 	// pending messages then sorted before dispatch.
 	ms := make(pendingMessages, 0, 2)
@@ -89,7 +89,7 @@ func (p *Parser) onCDemoPacket(m *dota.CDemoPacket) error {
 }
 
 // Internal parser for callback OnCDemoFullPacket.
-func (p *Parser) onCDemoFullPacket(m *dota.CDemoFullPacket) error {
+func (p *Parser) onCDemoFullPacket(m *deadlock.CDemoFullPacket) error {
 	// Per Valve docs, parse the CDemoStringTables first.
 	if m.StringTable != nil {
 		if err := p.onCDemoStringTables(m.GetStringTable()); err != nil {

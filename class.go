@@ -39,7 +39,7 @@ func (c *class) getFieldPaths(fp *fieldPath, state *fieldState) []*fieldPath {
 }
 
 // Internal callback for OnCSVCMsg_ServerInfo.
-func (p *Parser) onCSVCMsg_ServerInfo(m *dota.CSVCMsg_ServerInfo) error {
+func (p *Parser) onCSVCMsg_ServerInfo(m *deadlock.CSVCMsg_ServerInfo) error {
 	// This may be needed to parse PacketEntities.
 	p.classIdSize = uint32(math.Log(float64(m.GetMaxClasses()))/math.Log(2)) + 1
 
@@ -58,7 +58,7 @@ func (p *Parser) onCSVCMsg_ServerInfo(m *dota.CSVCMsg_ServerInfo) error {
 }
 
 // Internal callback for OnCDemoClassInfo.
-func (p *Parser) onCDemoClassInfo(m *dota.CDemoClassInfo) error {
+func (p *Parser) onCDemoClassInfo(m *deadlock.CDemoClassInfo) error {
 	for _, c := range m.GetClasses() {
 		classId := c.GetClassId()
 		networkName := c.GetNetworkName()

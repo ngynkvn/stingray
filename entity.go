@@ -219,11 +219,11 @@ func (p *Parser) FilterEntity(fb func(*Entity) bool) []*Entity {
 }
 
 // Internal Callback for OnCSVCMsg_PacketEntities.
-func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error {
+func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) error {
 	r := newReader(m.GetEntityData())
 
-	var index = int32(-1)
-	var updates = int(m.GetUpdatedEntries())
+	index := int32(-1)
+	updates := int(m.GetUpdatedEntries())
 	var cmd uint32
 	var classId int32
 	var serial int32
@@ -283,7 +283,6 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error 
 
 				readFields(r, e.class.serializer, e.state)
 			}
-
 		} else {
 			if e = p.entities[index]; e == nil {
 				_panicf("unable to find existing entity %d", index)

@@ -30,20 +30,20 @@ var gameEventTypeNames = map[int32]string{
 // Represents a game event. Includes a type and the actual message.
 type GameEvent struct {
 	t *gameEventType
-	m *dota.CMsgSource1LegacyGameEvent
+	m *deadlock.CMsgSource1LegacyGameEvent
 }
 
 func (ge *GameEvent) TypeName() string {
-	return dota.DOTA_COMBATLOG_TYPES_name[ge.m.GetKeys()[0].GetValByte()]
+	return deadlock.ReplayEventTypeT_name[ge.m.GetKeys()[0].GetValByte()]
 }
 
-func (ge *GameEvent) Type() dota.DOTA_COMBATLOG_TYPES {
-	return dota.DOTA_COMBATLOG_TYPES(ge.m.GetKeys()[0].GetValByte())
+func (ge *GameEvent) Type() deadlock.ReplayEventTypeT {
+	return deadlock.ReplayEventTypeT(ge.m.GetKeys()[0].GetValByte())
 }
 
 func (ge *GameEvent) String() string {
 	keys := ge.m.GetKeys()
-	name := dota.DOTA_COMBATLOG_TYPES_name[keys[0].GetValByte()]
+	name := deadlock.ReplayEventTypeT_name[keys[0].GetValByte()]
 	buf := bytes.NewBufferString("\n  " + name + "\n")
 
 	for name, field := range ge.t.fields {
@@ -157,7 +157,7 @@ func (e *GameEvent) GetUint64(name string) (uint64, error) {
 }
 
 // Finds the key in the game event which corresponds to a given name.
-func (e *GameEvent) getEventKey(name string) (*dota.CMsgSource1LegacyGameEventKeyT, error) {
+func (e *GameEvent) getEventKey(name string) (*deadlock.CMsgSource1LegacyGameEventKeyT, error) {
 	f, ok := e.t.fields[name]
 	if !ok {
 		return nil, _errorf("field %s: missing", name)
@@ -191,7 +191,7 @@ type gameEventField struct {
 
 // Internal handler for callback OnCMsgSource1LegacyGameEventList.
 // Registers game event names and types with the parser for O(1) lookup later.
-func (p *Parser) onCMsgSource1LegacyGameEventList(m *dota.CMsgSource1LegacyGameEventList) error {
+func (p *Parser) onCMsgSource1LegacyGameEventList(m *deadlock.CMsgSource1LegacyGameEventList) error {
 	for _, d := range m.GetDescriptors() {
 		t := &gameEventType{
 			eventId: d.GetEventid(),
@@ -214,7 +214,7 @@ func (p *Parser) onCMsgSource1LegacyGameEventList(m *dota.CMsgSource1LegacyGameE
 
 // Internal handler for callback OnCMsgSource1LegacyGameEvent.
 // Looks up the name and type of an event and offers it to registered handlers.
-func (p *Parser) onCMsgSource1LegacyGameEvent(m *dota.CMsgSource1LegacyGameEvent) error {
+func (p *Parser) onCMsgSource1LegacyGameEvent(m *deadlock.CMsgSource1LegacyGameEvent) error {
 	// Look up the handler name by event id.
 	name, ok := p.gameEventNames[m.GetEventid()]
 	if !ok {

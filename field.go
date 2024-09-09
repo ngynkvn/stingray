@@ -54,7 +54,7 @@ func (f *field) modelString() string {
 	}
 }
 
-func newField(ser *dota.CSVCMsg_FlattenedSerializer, f *dota.ProtoFlattenedSerializerFieldT) *field {
+func newField(ser *deadlock.CSVCMsg_FlattenedSerializer, f *deadlock.ProtoFlattenedSerializerFieldT) *field {
 	resolve := func(p *int32) string {
 		if p == nil {
 			return ""

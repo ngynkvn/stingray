@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/golang/snappy"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 // The first 8 bytes of a replay for Source 1 and Source 2
-var magicSource1 = []byte{'P', 'U', 'F', 'D', 'E', 'M', 'S', '\000'}
-var magicSource2 = []byte{'P', 'B', 'D', 'E', 'M', 'S', '2', '\000'}
+var (
+	magicSource1 = []byte{'P', 'U', 'F', 'D', 'E', 'M', 'S', '\000'}
+	magicSource2 = []byte{'P', 'B', 'D', 'E', 'M', 'S', '2', '\000'}
+)
 
 // Parser is an instance of the replay parser
 type Parser struct {
@@ -31,23 +33,24 @@ type Parser struct {
 	// AfterStopCallback is a function to be called when the parser stops.
 	AfterStopCallback func()
 
-	classBaselines             map[int32][]byte
-	classesById                map[int32]*class
-	classesByName              map[string]*class
-	classIdSize                uint32
-	classInfo                  bool
-	entities                   map[int32]*Entity
-	entityFullPackets          int
-	entityHandlers             []EntityHandler
-	gameEventHandlers          map[string][]GameEventHandler
-	gameEventNames             map[int32]string
-	gameEventTypes             map[string]*gameEventType
-	isStopping                 bool
-	modifierTableEntryHandlers []ModifierTableEntryHandler
-	serializers                map[string]*serializer
-	stream                     *stream
-	stringTables               *stringTables
-	stopAtTick                 uint32
+	classBaselines    map[int32][]byte
+	classesById       map[int32]*class
+	classesByName     map[string]*class
+	classIdSize       uint32
+	classInfo         bool
+	entities          map[int32]*Entity
+	entityFullPackets int
+	entityHandlers    []EntityHandler
+	gameEventHandlers map[string][]GameEventHandler
+	gameEventNames    map[int32]string
+	gameEventTypes    map[string]*gameEventType
+	isStopping        bool
+	// TODO: What is this?
+	// modifierTableEntryHandlers []ModifierTableEntryHandler
+	serializers  map[string]*serializer
+	stream       *stream
+	stringTables *stringTables
+	stopAtTick   uint32
 }
 
 // Create a new parser from a byte slice.
@@ -107,7 +110,7 @@ func NewStreamParser(r io.Reader) (*Parser, error) {
 	parser.Callbacks.OnCSVCMsg_PacketEntities(parser.onCSVCMsg_PacketEntities)
 
 	// Maintains the value of parser.Tick
-	parser.Callbacks.OnCNETMsg_Tick(func(m *dota.CNETMsg_Tick) error {
+	parser.Callbacks.OnCNETMsg_Tick(func(m *deadlock.CNETMsg_Tick) error {
 		parser.NetTick = m.GetTick()
 		return nil
 	})
@@ -201,8 +204,8 @@ func (p *Parser) readOuterMessage() (*outerMessage, error) {
 	}
 
 	// Extract the type and compressed flag out of the command
-	msgType := int32(command & ^dota.EDemoCommands_DEM_IsCompressed)
-	msgCompressed := (command & dota.EDemoCommands_DEM_IsCompressed) == dota.EDemoCommands_DEM_IsCompressed
+	msgType := int32(command & ^deadlock.EDemoCommands_DEM_IsCompressed)
+	msgCompressed := (command & deadlock.EDemoCommands_DEM_IsCompressed) == deadlock.EDemoCommands_DEM_IsCompressed
 
 	// Read the tick that the message corresponds with.
 	tick, err := p.stream.readVarUint32()

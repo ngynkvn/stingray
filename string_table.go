@@ -1,8 +1,8 @@
 package stingray
 
 import (
-	"github.com/ngynkvn/stingray/deadlock"
 	"github.com/golang/snappy"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 const (
@@ -62,14 +62,14 @@ type stringTableItem struct {
 // These appear to be periodic state dumps and appear every 1800 outer ticks.
 // XXX TODO: decide if we want to at all integrate these updates,
 // or trust create/update entirely. Let's ignore them for now.
-func (p *Parser) onCDemoStringTables(m *dota.CDemoStringTables) error {
+func (p *Parser) onCDemoStringTables(m *deadlock.CDemoStringTables) error {
 	return nil
 }
 
 // Internal callback for CSVCMsg_CreateStringTable.
 // XXX TODO: This is currently using an artificial, internally crafted message.
 // This should be replaced with the real message once we have updated protos.
-func (p *Parser) onCSVCMsg_CreateStringTable(m *dota.CSVCMsg_CreateStringTable) error {
+func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTable) error {
 	// Create a new string table at the next index position
 	t := &stringTable{
 		index:             p.stringTables.nextIndex,
@@ -123,16 +123,17 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *dota.CSVCMsg_CreateStringTable) 
 
 	// Emit events for modifier table entry updates
 	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
+		// TODO: What is this?
+		// if err := p.emitModifierTableEvents(items); err != nil {
+		// 	return err
+		// }
 	}
 
 	return nil
 }
 
 // Internal callback for CSVCMsg_UpdateStringTable.
-func (p *Parser) onCSVCMsg_UpdateStringTable(m *dota.CSVCMsg_UpdateStringTable) error {
+func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTable) error {
 	// TODO: integrate
 	t, ok := p.stringTables.Tables[m.GetTableId()]
 	if !ok {
@@ -168,9 +169,10 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *dota.CSVCMsg_UpdateStringTable) 
 
 	// Emit events for modifier table entry updates
 	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
+		// TODO: what is this?
+		// if err := p.emitModifierTableEvents(items); err != nil {
+		// 	return err
+		// }
 	}
 
 	return nil

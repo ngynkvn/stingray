@@ -39,7 +39,7 @@ func main() {
   }
 
   // Register a callback, this time for the OnCUserMessageSayText2 event.
-  p.Callbacks.OnCUserMessageSayText2(func(m *dota.CUserMessageSayText2) error {
+  p.Callbacks.OnCUserMessageSayText2(func(m *deadlock.CUserMessageSayText2) error {
     log.Printf("%s said: %s\n", m.GetParam1(), m.GetParam2())
     return nil
   })
