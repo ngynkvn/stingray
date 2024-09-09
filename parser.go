@@ -2,7 +2,6 @@ package stingray
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -144,15 +143,16 @@ func (p *Parser) Start() (err error) {
 
 	defer p.afterStop()
 
-	defer func() {
-		if p := recover(); p != nil {
-			if e, ok := p.(error); ok {
-				err = e
-			} else {
-				err = fmt.Errorf("%v", p)
-			}
-		}
-	}()
+	// TODO: uncomment later, debugging parser atm
+	// defer func() {
+	// 	if p := recover(); p != nil {
+	// 		if e, ok := p.(error); ok {
+	// 			err = e
+	// 		} else {
+	// 			err = fmt.Errorf("%v", p)
+	// 		}
+	// 	}
+	// }()
 
 	// Loop through all outer messages until we're signaled to stop. Stopping
 	// happens when either the OnCDemoStop message is encountered or

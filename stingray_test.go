@@ -24,7 +24,12 @@ func TestBasicParsing(t *testing.T) {
 	}
 	p.Callbacks.OnCDemoFileHeader(dump)
 	// p.Callbacks.OnCDemoSignonPacket(dump)
-	p.Start()
+	err = p.Start()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
 	t.Log("Parse complete!")
 }
 

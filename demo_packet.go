@@ -1,6 +1,7 @@
 package stingray
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/ngynkvn/stingray/deadlock"
@@ -87,14 +88,15 @@ func (p *Parser) onCDemoPacket(m *deadlock.CDemoPacket) error {
 				return p.Callbacks.getPacketTypeName(msg.t)
 			}),
 		).Info("onCDemoPacket")
-		// for _, item := range ms {
-		// 	logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(item.t), p.Callbacks.toPacketString(item.t, item.buf))
-		// 	maxLen := 512
-		// 	if len(logMsg) > maxLen {
-		// 		logMsg = logMsg[:maxLen] + "..."
-		// 	}
-		// 	p.Logger.Info(logMsg)
-		// }
+		for _, item := range ms {
+			logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(item.t), p.Callbacks.toPacketString(item.t, item.buf))
+			itemLen := len(item.buf)
+			maxLen := 256
+			if len(logMsg) > maxLen {
+				logMsg = logMsg[:maxLen] + "..."
+			}
+			p.Logger.With("packet_len", itemLen).Info(logMsg)
+		}
 	}
 
 	// Dispatch messages in order, returning on handler error.
