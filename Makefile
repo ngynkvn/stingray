@@ -27,26 +27,53 @@ memprofile:
 	go test -v -run=TestMatch2159568145 -test.memprofile=/tmp/manta.memprof -test.memprofilerate=1
 	go tool pprof --alloc_space manta.test /tmp/manta.memprof
 
-update: update-protobufs generate
+update: update-protobufs
 
 update-protobufs:
-	rm -rf dota
-	mkdir -p ./dota/tmp && \
-		curl -L -o - https://github.com/SteamDatabase/GameTracking-Dota2/archive/master.tar.gz | tar -xz --strip-components=1 -C ./dota/tmp && \
-		cp -a ./dota/tmp/Protobufs/*.proto ./dota/ && \
-		rm -rf ./dota/tmp
-	rm -rf dota/gametoolevents.proto dota/dota_messages_mlbot.proto dota/dota_gcmessages_common_bot_script.proto dota/steammessages_base.proto dota/steammessages_clientserver_login.proto dota/tensorflow
-	$(SED) -i 's/\.CMsgFightingGame_GameData/CMsgFightingGame_GameData/g' dota/dota_fighting_game_p2p_messages.proto
-	$(SED) -i 's/^\(\s*\)\(optional\|repeated\|required\|extend\)\s*\./\1\2 /' dota/*.proto
-	$(SED) -i 's!^\s*rpc\s*\(\S*\)\s*(\.\([^)]*\))\s*returns\s*(\.\([^)]*\))\s*{!rpc \1 (\2) returns (\3) {!' dota/*.proto
-	$(SED) -i '1isyntax = "proto2";\n\npackage dota;\noption go_package = "github.com/dotabuff/manta/dota;dota";\n' dota/*.proto
-	$(SED) -i '/^import "google\/protobuf\/valve_extensions\.proto"/d' dota/*.proto
-	$(SED) -i '/^option (/d' dota/*.proto
-	$(SED) -i 's/\s\[.*\]//g' dota/*.proto
-	$(SED) -i 's/\.CMsgSteamLearn/CMsgSteamLearn/g' dota/*.proto
-	$(SED) -i 's/\.CMsgShowcaseItem/CMsgShowcaseItem/g' dota/*.proto
-	$(SED) -i 's/\.CMsgShowcaseBackground/CMsgShowcaseBackground/g' dota/*.proto
-	protoc -I dota --go_out=paths=source_relative:dota  dota/*.proto
+	rm -rf deadlock
+	mkdir -p ./deadlock/tmp && \
+		curl -L -o - https://github.com/SteamDatabase/GameTracking-Deadlock/archive/master.tar.gz | tar -xz --strip-components=1 -C ./deadlock/tmp && \
+		cp -a ./deadlock/tmp/Protobufs/*.proto ./deadlock/ && \
+		rm -rf ./deadlock/tmp
+	rm -rf deadlock/base_gcmessages.proto \
+		deadlock/c_peer2peer_netmessages.proto \
+		deadlock/citadel_clientmessages.proto \
+		deadlock/citadel_gcmessages_client.proto \
+		deadlock/citadel_gcmessages_server.proto \
+		deadlock/citadel_usercmd.proto \
+		deadlock/clientmessages.proto \
+		deadlock/connectionless_netmessages.proto \
+		deadlock/econ_gcmessages.proto \
+		deadlock/econ_shared_enums.proto \
+		deadlock/engine_gcmessages.proto \
+		deadlock/enums_clientserver.proto \
+		deadlock/gcsystemmsgs.proto \
+		deadlock/network_connection.proto \
+		deadlock/networksystem_protomessages.proto \
+		deadlock/steamdatagram_messages_auth.proto \
+		deadlock/steamdatagram_messages_sdr.proto \
+		deadlock/steammessages_base.proto \
+		deadlock/steammessages_cloud.steamworkssdk.proto \
+		deadlock/steammessages_gamenetworkingui.proto \
+		deadlock/steammessages_helprequest.steamworkssdk.proto \
+		deadlock/steammessages_int.proto \
+		deadlock/steammessages_oauth.steamworkssdk.proto \
+		deadlock/steammessages_player.steamworkssdk.proto \
+		deadlock/steammessages_publishedfile.steamworkssdk.proto \
+		deadlock/steamnetworkingsockets_messages.proto \
+		deadlock/steamnetworkingsockets_messages_certs.proto \
+		deadlock/steamnetworkingsockets_messages_udp.proto \
+		deadlock/uifontfile_format.proto \
+		deadlock/usercmd.proto \
+		deadlock/google/protobuf/any.proto \
+		deadlock/google/protobuf/source_context.proto \
+		deadlock/google/protobuf/type.proto \
+		deadlock/google/protobuf/wrappers.proto
+	$(SED) -i '/^import "network_connection\.proto"/d' deadlock/networkbasetypes.proto
+	$(SED) -i '/^import "google\/protobuf\/descriptor\.proto"/d' deadlock/citadel_gameevents.proto
+	$(SED) -i '/^import "citadel_gcmessages_common.proto"/d' deadlock/citadel_gamemessages.proto
+	$(SED) -i '1isyntax = "proto2";\n\noption go_package = "github.com/ngynkvn/stingray/deadlock;deadlock";\n' deadlock/*.proto
+	protoc -I deadlock --go_out=paths=source_relative:deadlock  deadlock/*.proto
 
 generate:
 	go run gen/callbacks.go
