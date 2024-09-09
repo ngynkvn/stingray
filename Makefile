@@ -27,7 +27,7 @@ memprofile:
 	go test -v -run=TestMatch2159568145 -test.memprofile=/tmp/manta.memprof -test.memprofilerate=1
 	go tool pprof --alloc_space manta.test /tmp/manta.memprof
 
-update: update-protobufs
+update: update-protobufs generate
 
 update-protobufs:
 	rm -rf deadlock

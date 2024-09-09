@@ -7,7 +7,7 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -15,8 +15,8 @@ import (
 	"text/template"
 )
 
-// dotaMessage provides metadata to link an enum type and value to a struct type
-type dotaMessage struct {
+// deadlockMessage provides metadata to link an enum type and value to a struct type
+type deadlockMessage struct {
 	// typeRe provides a regular expression for the matching type
 	// example: /^CDemo/ to match CDemoPacket
 	typeRe *regexp.Regexp
@@ -47,8 +47,8 @@ type dotaMessage struct {
 }
 
 // messageTypes are constant defined message type mappings, edit as necessary.
-var messageTypes = []*dotaMessage{
-	&dotaMessage{
+var messageTypes = []*deadlockMessage{
+	{
 		typeRe:     regexp.MustCompile("^CDemo"),
 		enumName:   "EDemoCommands",
 		enumValues: map[string]int{},
@@ -74,7 +74,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: false,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CNETMsg_"),
 		enumName:   "NET_Messages",
 		enumValues: map[string]int{},
@@ -86,7 +86,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CSVCMsg_"),
 		enumName:   "SVC_Messages",
 		enumValues: map[string]int{},
@@ -98,7 +98,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CUserMessage"),
 		enumName:   "EBaseUserMessages",
 		enumValues: map[string]int{},
@@ -120,7 +120,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CEntityMessage"),
 		enumName:   "EBaseEntityMessages",
 		enumValues: map[string]int{},
@@ -132,7 +132,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CMsg"),
 		enumName:   "EBaseGameEvents",
 		enumValues: map[string]int{},
@@ -144,30 +144,30 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
-		typeRe:     regexp.MustCompile("^CDOTAUserMsg"),
-		enumName:   "EDotaUserMessages",
+	{
+		typeRe:     regexp.MustCompile("^CdeadlockUserMsg"),
+		enumName:   "EdeadlockUserMessages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
 			switch s {
-			case "EDotaUserMessages_DOTA_UM_AddUnitToSelection":
+			case "EdeadlockUserMessages_DOTA_UM_AddUnitToSelection":
 				return "", false
-			case "EDotaUserMessages_DOTA_UM_CombatLogData":
+			case "EdeadlockUserMessages_DOTA_UM_CombatLogData":
 				return "", false
-			case "EDotaUserMessages_DOTA_UM_CharacterSpeakConcept":
+			case "EdeadlockUserMessages_DOTA_UM_CharacterSpeakConcept":
 				return "", false
-			case "EDotaUserMessages_DOTA_UM_TournamentDrop":
+			case "EdeadlockUserMessages_DOTA_UM_TournamentDrop":
 				return "CMsgGCToClientTournamentItemDrop", true
-			case "EDotaUserMessages_DOTA_UM_StatsHeroDetails":
-				return "CDOTAUserMsg_StatsHeroMinuteDetails", true
-			case "EDotaUserMessages_DOTA_UM_CombatLogDataHLTV":
-				return "CMsgDOTACombatLogEntry", true
-			case "EDotaUserMessages_DOTA_UM_MatchMetadata":
-				return "CDOTAMatchMetadataFile", true
-			case "EDotaUserMessages_DOTA_UM_MatchDetails":
+			case "EdeadlockUserMessages_DOTA_UM_StatsHeroDetails":
+				return "CdeadlockUserMsg_StatsHeroMinuteDetails", true
+			case "EdeadlockUserMessages_DOTA_UM_CombatLogDataHLTV":
+				return "CMsgdeadlockCombatLogEntry", true
+			case "EdeadlockUserMessages_DOTA_UM_MatchMetadata":
+				return "CdeadlockMatchMetadataFile", true
+			case "EdeadlockUserMessages_DOTA_UM_MatchDetails":
 				return "", false
 			}
-			return strings.Replace(s, "EDotaUserMessages_DOTA_UM_", "CDOTAUserMsg_", 1), true
+			return strings.Replace(s, "EdeadlockUserMessages_DOTA_UM_", "CDOTAUserMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
 			return "", false
@@ -181,7 +181,7 @@ var messageTypes = []*dotaMessage{
 var messageTypeNames = map[string]bool{}
 
 // findMessageByTypeName finds a message type by type name (ex. CDemoPacket)
-func findMessageByTypeName(s string) (*dotaMessage, bool) {
+func findMessageByTypeName(s string) (*deadlockMessage, bool) {
 	for _, t := range messageTypes {
 		if t.typeRe.MatchString(s) {
 			return t, true
@@ -191,7 +191,7 @@ func findMessageByTypeName(s string) (*dotaMessage, bool) {
 }
 
 // findMessageByEnumName finds a message type by enum name (ex. EDemoCommands)
-func findMessageByEnumName(s string) (*dotaMessage, bool) {
+func findMessageByEnumName(s string) (*deadlockMessage, bool) {
 	for _, t := range messageTypes {
 		if s == t.enumName {
 			return t, true
@@ -201,9 +201,9 @@ func findMessageByEnumName(s string) (*dotaMessage, bool) {
 }
 
 func main() {
-	discoverTypes("./dota")
+	discoverTypes("./deadlock")
 
-	buf, err := ioutil.ReadFile("gen/callbacks.tmpl")
+	buf, err := os.ReadFile("gen/callbacks.tmpl")
 	if err != nil {
 		panic(err)
 	}
@@ -227,7 +227,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile("callbacks.go", source, 0644); err != nil {
+	if err := os.WriteFile("callbacks.go", source, 0644); err != nil {
 		panic(err)
 	}
 }
@@ -307,7 +307,7 @@ func makeContext() ctx {
 	return c
 }
 
-// discoverTypes walks the go files in the dota directory and populates the data
+// discoverTypes walks the go files in the deadlock directory and populates the data
 // in messageTypes and messageTypeNames.
 func discoverTypes(protoPath string) {
 	fileset := token.NewFileSet()
@@ -332,7 +332,7 @@ func discoverTypes(protoPath string) {
 							// Type specs contain types such as CDemoPacket. Extract the type
 							// name and mark it as found in the corresponding message type.
 							typeName := t.Name.String()
-							//if _, ok := findMessageByTypeName(typeName); ok {
+							// if _, ok := findMessageByTypeName(typeName); ok {
 							messageTypeNames[typeName] = true
 							//}
 
