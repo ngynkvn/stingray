@@ -10,7 +10,7 @@ import (
 	"github.com/ngynkvn/stingray/deadlock"
 )
 
-var gameBuildRegexp = regexp.MustCompile(`/dota_v(\d+)/`)
+var gameBuildRegexp = regexp.MustCompile(`/citadel_v(\d+)/`)
 
 type class struct {
 	classId    int32

@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/ngynkvn/stingray/deadlock"
+	"github.com/samber/lo"
 )
 
 // A message that has been read from an outerMessage but not yet processed.
@@ -77,6 +78,24 @@ func (p *Parser) onCDemoPacket(m *deadlock.CDemoPacket) error {
 	// Sort messages to ensure dependencies are met. For example, we need to
 	// process string tables before game events that may reference them.
 	sort.Sort(ms)
+
+	if p.Logger != nil {
+		p.Logger.With(
+			"tick", p.Tick,
+			"len_messages", len(ms),
+			"packet_names", lo.Map(ms, func(msg *pendingMessage, _ int) string {
+				return p.Callbacks.getPacketTypeName(msg.t)
+			}),
+		).Info("onCDemoPacket")
+		// for _, item := range ms {
+		// 	logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(item.t), p.Callbacks.toPacketString(item.t, item.buf))
+		// 	maxLen := 512
+		// 	if len(logMsg) > maxLen {
+		// 		logMsg = logMsg[:maxLen] + "..."
+		// 	}
+		// 	p.Logger.Info(logMsg)
+		// }
+	}
 
 	// Dispatch messages in order, returning on handler error.
 	for _, m := range ms {

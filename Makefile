@@ -31,17 +31,9 @@ update: update-protobufs generate
 
 update-protobufs:
 	rm -rf deadlock
-	mkdir -p ./deadlock/tmp && \
-		curl -L -o - https://github.com/SteamDatabase/GameTracking-Deadlock/archive/master.tar.gz | tar -xz --strip-components=1 -C ./deadlock/tmp && \
-		cp -a ./deadlock/tmp/Protobufs/*.proto ./deadlock/ && \
-		rm -rf ./deadlock/tmp
+	./download-protobufs.sh
 	rm -rf deadlock/base_gcmessages.proto \
 		deadlock/c_peer2peer_netmessages.proto \
-		deadlock/citadel_clientmessages.proto \
-		deadlock/citadel_gcmessages_client.proto \
-		deadlock/citadel_gcmessages_server.proto \
-		deadlock/citadel_usercmd.proto \
-		deadlock/clientmessages.proto \
 		deadlock/connectionless_netmessages.proto \
 		deadlock/econ_gcmessages.proto \
 		deadlock/econ_shared_enums.proto \
@@ -64,7 +56,6 @@ update-protobufs:
 		deadlock/steamnetworkingsockets_messages_certs.proto \
 		deadlock/steamnetworkingsockets_messages_udp.proto \
 		deadlock/uifontfile_format.proto \
-		deadlock/usercmd.proto \
 		deadlock/google/protobuf/any.proto \
 		deadlock/google/protobuf/source_context.proto \
 		deadlock/google/protobuf/type.proto \

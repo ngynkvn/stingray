@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
+	"os"
 
 	"github.com/golang/snappy"
+	"github.com/lmittmann/tint"
 	"github.com/ngynkvn/stingray/deadlock"
 )
 
@@ -33,6 +36,9 @@ type Parser struct {
 	// AfterStopCallback is a function to be called when the parser stops.
 	AfterStopCallback func()
 
+	// Set to to enable debug logging
+	Logger *slog.Logger
+
 	classBaselines    map[int32][]byte
 	classesById       map[int32]*class
 	classesByName     map[string]*class
@@ -53,6 +59,15 @@ type Parser struct {
 	stopAtTick   uint32
 }
 
+type ParserOpt func(*Parser) *Parser
+
+func Logger(p *Parser) *Parser {
+	p.Logger = slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+		AddSource: true,
+	}))
+	return p
+}
+
 // Create a new parser from a byte slice.
 func NewParser(buf []byte) (*Parser, error) {
 	r := bytes.NewReader(buf)
@@ -60,13 +75,14 @@ func NewParser(buf []byte) (*Parser, error) {
 }
 
 // Create a new Parser from an io.Reader
-func NewStreamParser(r io.Reader) (*Parser, error) {
+func NewStreamParser(r io.Reader, opts ...ParserOpt) (*Parser, error) {
 	// Create a new parser with an internal reader for the given buffer.
 	parser := &Parser{
 		Callbacks: newCallbacks(),
 		Tick:      0,
 		NetTick:   0,
 		GameBuild: 0,
+		Logger:    slog.New(slog.NewJSONHandler(io.Discard, nil)),
 
 		classBaselines:    make(map[int32][]byte),
 		classesById:       make(map[int32]*class),
@@ -80,6 +96,10 @@ func NewStreamParser(r io.Reader) (*Parser, error) {
 		serializers:       make(map[string]*serializer),
 		stream:            newStream(r),
 		stringTables:      newStringTables(),
+	}
+
+	for _, fn := range opts {
+		parser = fn(parser)
 	}
 
 	// Parse out the header, ensuring that it's valid.
@@ -142,17 +162,29 @@ func (p *Parser) Start() (err error) {
 			return
 		}
 
+		p.Logger.Info("parsing next msg...")
+
 		msg, err = p.readOuterMessage()
 		if err != nil {
 			if err == io.EOF {
+				p.Logger.Info("EOF")
 				err = nil
 			}
+			p.Logger.Error(err.Error())
 			return
 		}
 
 		p.Tick = msg.tick
 
+		p.Logger.With(
+			"tick", msg.tick,
+			"len", len(msg.data),
+			"typeId", msg.typeId,
+			"name", p.Callbacks.getDemoTypeName(msg.typeId),
+		).Info("Parsed")
+
 		if err = p.Callbacks.callByDemoType(msg.typeId, msg.data); err != nil {
+			p.Logger.With("error", err).Error("Encountered issue")
 			return
 		}
 	}

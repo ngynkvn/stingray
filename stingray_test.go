@@ -9,20 +9,21 @@ import (
 )
 
 func TestBasicParsing(t *testing.T) {
-	f, err := os.Open("testdata/534870.dem")
+	f, err := os.Open("./testdata/10078705.dem")
+	// f, err := os.Open("testdata/534870.dem")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 	defer f.Close()
 
-	p, err := stingray.NewStreamParser(f)
+	p, err := stingray.NewStreamParser(f, stingray.Logger)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 	p.Callbacks.OnCDemoFileHeader(dump)
-	p.Callbacks.OnCDemoPacket(dump)
+	// p.Callbacks.OnCDemoSignonPacket(dump)
 	p.Start()
 	t.Log("Parse complete!")
 }

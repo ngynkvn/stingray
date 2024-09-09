@@ -1072,6 +1072,1091 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 	return nil
 }
 
+// TODO: Cleanup
+func (c *Callbacks) getDemoTypeName(t int32) string {
+	switch t {
+	case 0: //deadlock.EDemoCommands_DEM_Stop
+		return "EDemoCommands_DEM_Stop"
+	case 1: //deadlock.EDemoCommands_DEM_FileHeader
+		return "EDemoCommands_DEM_FileHeader"
+	case 2: //deadlock.EDemoCommands_DEM_FileInfo
+		return "EDemoCommands_DEM_FileInfo"
+	case 3: //deadlock.EDemoCommands_DEM_SyncTick
+		return "EDemoCommands_DEM_SyncTick"
+	case 4: //deadlock.EDemoCommands_DEM_SendTables
+		return "EDemoCommands_DEM_SendTables"
+	case 5: //deadlock.EDemoCommands_DEM_ClassInfo
+		return "EDemoCommands_DEM_ClassInfo"
+	case 6: //deadlock.EDemoCommands_DEM_StringTables
+		return "EDemoCommands_DEM_StringTables"
+	case 7: //deadlock.EDemoCommands_DEM_Packet
+		return "EDemoCommands_DEM_Packet"
+	case 8: //deadlock.EDemoCommands_DEM_SignonPacket
+		return "EDemoCommands_DEM_SignonPacket"
+	case 9: //deadlock.EDemoCommands_DEM_ConsoleCmd
+		return "EDemoCommands_DEM_ConsoleCmd"
+	case 10: //deadlock.EDemoCommands_DEM_CustomData
+		return "EDemoCommands_DEM_CustomData"
+	case 11: //deadlock.EDemoCommands_DEM_CustomDataCallbacks
+		return "EDemoCommands_DEM_CustomDataCallbacks"
+	case 12: //deadlock.EDemoCommands_DEM_UserCmd
+		return "EDemoCommands_DEM_UserCmd"
+	case 13: //deadlock.EDemoCommands_DEM_FullPacket
+		return "EDemoCommands_DEM_FullPacket"
+	case 14: //deadlock.EDemoCommands_DEM_SaveGame
+		return "EDemoCommands_DEM_SaveGame"
+	case 15: //deadlock.EDemoCommands_DEM_SpawnGroups
+		return "EDemoCommands_DEM_SpawnGroups"
+	case 16: //deadlock.EDemoCommands_DEM_AnimationData
+		return "EDemoCommands_DEM_AnimationData"
+	case 17: //deadlock.EDemoCommands_DEM_AnimationHeader
+		return "EDemoCommands_DEM_AnimationHeader"
+
+	}
+	return "UNKNOWN"
+}
+
+// TODO: Cleanup
+func (c *Callbacks) toDemoString(t int32, buf []byte) string {
+	switch t {
+	case 0: //deadlock.EDemoCommands_DEM_Stop
+		msg := &deadlock.CDemoStop{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 1: //deadlock.EDemoCommands_DEM_FileHeader
+		msg := &deadlock.CDemoFileHeader{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 2: //deadlock.EDemoCommands_DEM_FileInfo
+		msg := &deadlock.CDemoFileInfo{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 3: //deadlock.EDemoCommands_DEM_SyncTick
+		msg := &deadlock.CDemoSyncTick{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 4: //deadlock.EDemoCommands_DEM_SendTables
+		msg := &deadlock.CDemoSendTables{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 5: //deadlock.EDemoCommands_DEM_ClassInfo
+		msg := &deadlock.CDemoClassInfo{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 6: //deadlock.EDemoCommands_DEM_StringTables
+		msg := &deadlock.CDemoStringTables{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 7: //deadlock.EDemoCommands_DEM_Packet
+		msg := &deadlock.CDemoPacket{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 8: //deadlock.EDemoCommands_DEM_SignonPacket
+		msg := &deadlock.CDemoPacket{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 9: //deadlock.EDemoCommands_DEM_ConsoleCmd
+		msg := &deadlock.CDemoConsoleCmd{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 10: //deadlock.EDemoCommands_DEM_CustomData
+		msg := &deadlock.CDemoCustomData{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 11: //deadlock.EDemoCommands_DEM_CustomDataCallbacks
+		msg := &deadlock.CDemoCustomDataCallbacks{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 12: //deadlock.EDemoCommands_DEM_UserCmd
+		msg := &deadlock.CDemoUserCmd{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 13: //deadlock.EDemoCommands_DEM_FullPacket
+		msg := &deadlock.CDemoFullPacket{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 14: //deadlock.EDemoCommands_DEM_SaveGame
+		msg := &deadlock.CDemoSaveGame{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 15: //deadlock.EDemoCommands_DEM_SpawnGroups
+		msg := &deadlock.CDemoSpawnGroups{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 16: //deadlock.EDemoCommands_DEM_AnimationData
+		msg := &deadlock.CDemoAnimationData{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 17: //deadlock.EDemoCommands_DEM_AnimationHeader
+		msg := &deadlock.CDemoAnimationHeader{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+
+	}
+	return "UNKNOWN"
+}
+
+// TODO: Cleanup
+func (c *Callbacks) getPacketTypeName(t int32) string {
+	switch t {
+	case 0: //deadlock.NET_Messages_net_NOP
+		return "NET_Messages_net_NOP"
+	case 3: //deadlock.NET_Messages_net_SplitScreenUser
+		return "NET_Messages_net_SplitScreenUser"
+	case 4: //deadlock.NET_Messages_net_Tick
+		return "NET_Messages_net_Tick"
+	case 5: //deadlock.NET_Messages_net_StringCmd
+		return "NET_Messages_net_StringCmd"
+	case 6: //deadlock.NET_Messages_net_SetConVar
+		return "NET_Messages_net_SetConVar"
+	case 7: //deadlock.NET_Messages_net_SignonState
+		return "NET_Messages_net_SignonState"
+	case 8: //deadlock.NET_Messages_net_SpawnGroup_Load
+		return "NET_Messages_net_SpawnGroup_Load"
+	case 9: //deadlock.NET_Messages_net_SpawnGroup_ManifestUpdate
+		return "NET_Messages_net_SpawnGroup_ManifestUpdate"
+	case 11: //deadlock.NET_Messages_net_SpawnGroup_SetCreationTick
+		return "NET_Messages_net_SpawnGroup_SetCreationTick"
+	case 12: //deadlock.NET_Messages_net_SpawnGroup_Unload
+		return "NET_Messages_net_SpawnGroup_Unload"
+	case 13: //deadlock.NET_Messages_net_SpawnGroup_LoadCompleted
+		return "NET_Messages_net_SpawnGroup_LoadCompleted"
+	case 15: //deadlock.NET_Messages_net_DebugOverlay
+		return "NET_Messages_net_DebugOverlay"
+	case 40: //deadlock.SVC_Messages_svc_ServerInfo
+		return "SVC_Messages_svc_ServerInfo"
+	case 41: //deadlock.SVC_Messages_svc_FlattenedSerializer
+		return "SVC_Messages_svc_FlattenedSerializer"
+	case 42: //deadlock.SVC_Messages_svc_ClassInfo
+		return "SVC_Messages_svc_ClassInfo"
+	case 43: //deadlock.SVC_Messages_svc_SetPause
+		return "SVC_Messages_svc_SetPause"
+	case 44: //deadlock.SVC_Messages_svc_CreateStringTable
+		return "SVC_Messages_svc_CreateStringTable"
+	case 45: //deadlock.SVC_Messages_svc_UpdateStringTable
+		return "SVC_Messages_svc_UpdateStringTable"
+	case 46: //deadlock.SVC_Messages_svc_VoiceInit
+		return "SVC_Messages_svc_VoiceInit"
+	case 47: //deadlock.SVC_Messages_svc_VoiceData
+		return "SVC_Messages_svc_VoiceData"
+	case 48: //deadlock.SVC_Messages_svc_Print
+		return "SVC_Messages_svc_Print"
+	case 49: //deadlock.SVC_Messages_svc_Sounds
+		return "SVC_Messages_svc_Sounds"
+	case 50: //deadlock.SVC_Messages_svc_SetView
+		return "SVC_Messages_svc_SetView"
+	case 51: //deadlock.SVC_Messages_svc_ClearAllStringTables
+		return "SVC_Messages_svc_ClearAllStringTables"
+	case 52: //deadlock.SVC_Messages_svc_CmdKeyValues
+		return "SVC_Messages_svc_CmdKeyValues"
+	case 53: //deadlock.SVC_Messages_svc_BSPDecal
+		return "SVC_Messages_svc_BSPDecal"
+	case 54: //deadlock.SVC_Messages_svc_SplitScreen
+		return "SVC_Messages_svc_SplitScreen"
+	case 55: //deadlock.SVC_Messages_svc_PacketEntities
+		return "SVC_Messages_svc_PacketEntities"
+	case 56: //deadlock.SVC_Messages_svc_Prefetch
+		return "SVC_Messages_svc_Prefetch"
+	case 57: //deadlock.SVC_Messages_svc_Menu
+		return "SVC_Messages_svc_Menu"
+	case 58: //deadlock.SVC_Messages_svc_GetCvarValue
+		return "SVC_Messages_svc_GetCvarValue"
+	case 59: //deadlock.SVC_Messages_svc_StopSound
+		return "SVC_Messages_svc_StopSound"
+	case 60: //deadlock.SVC_Messages_svc_PeerList
+		return "SVC_Messages_svc_PeerList"
+	case 61: //deadlock.SVC_Messages_svc_PacketReliable
+		return "SVC_Messages_svc_PacketReliable"
+	case 62: //deadlock.SVC_Messages_svc_HLTVStatus
+		return "SVC_Messages_svc_HLTVStatus"
+	case 63: //deadlock.SVC_Messages_svc_ServerSteamID
+		return "SVC_Messages_svc_ServerSteamID"
+	case 70: //deadlock.SVC_Messages_svc_FullFrameSplit
+		return "SVC_Messages_svc_FullFrameSplit"
+	case 71: //deadlock.SVC_Messages_svc_RconServerDetails
+		return "SVC_Messages_svc_RconServerDetails"
+	case 72: //deadlock.SVC_Messages_svc_UserMessage
+		return "SVC_Messages_svc_UserMessage"
+	case 74: //deadlock.SVC_Messages_svc_Broadcast_Command
+		return "SVC_Messages_svc_Broadcast_Command"
+	case 75: //deadlock.SVC_Messages_svc_HltvFixupOperatorStatus
+		return "SVC_Messages_svc_HltvFixupOperatorStatus"
+	case 101: //deadlock.EBaseUserMessages_UM_AchievementEvent
+		return "EBaseUserMessages_UM_AchievementEvent"
+	case 102: //deadlock.EBaseUserMessages_UM_CloseCaption
+		return "EBaseUserMessages_UM_CloseCaption"
+	case 103: //deadlock.EBaseUserMessages_UM_CloseCaptionDirect
+		return "EBaseUserMessages_UM_CloseCaptionDirect"
+	case 104: //deadlock.EBaseUserMessages_UM_CurrentTimescale
+		return "EBaseUserMessages_UM_CurrentTimescale"
+	case 105: //deadlock.EBaseUserMessages_UM_DesiredTimescale
+		return "EBaseUserMessages_UM_DesiredTimescale"
+	case 106: //deadlock.EBaseUserMessages_UM_Fade
+		return "EBaseUserMessages_UM_Fade"
+	case 107: //deadlock.EBaseUserMessages_UM_GameTitle
+		return "EBaseUserMessages_UM_GameTitle"
+	case 110: //deadlock.EBaseUserMessages_UM_HudMsg
+		return "EBaseUserMessages_UM_HudMsg"
+	case 111: //deadlock.EBaseUserMessages_UM_HudText
+		return "EBaseUserMessages_UM_HudText"
+	case 113: //deadlock.EBaseUserMessages_UM_ColoredText
+		return "EBaseUserMessages_UM_ColoredText"
+	case 114: //deadlock.EBaseUserMessages_UM_RequestState
+		return "EBaseUserMessages_UM_RequestState"
+	case 115: //deadlock.EBaseUserMessages_UM_ResetHUD
+		return "EBaseUserMessages_UM_ResetHUD"
+	case 116: //deadlock.EBaseUserMessages_UM_Rumble
+		return "EBaseUserMessages_UM_Rumble"
+	case 117: //deadlock.EBaseUserMessages_UM_SayText
+		return "EBaseUserMessages_UM_SayText"
+	case 118: //deadlock.EBaseUserMessages_UM_SayText2
+		return "EBaseUserMessages_UM_SayText2"
+	case 119: //deadlock.EBaseUserMessages_UM_SayTextChannel
+		return "EBaseUserMessages_UM_SayTextChannel"
+	case 120: //deadlock.EBaseUserMessages_UM_Shake
+		return "EBaseUserMessages_UM_Shake"
+	case 121: //deadlock.EBaseUserMessages_UM_ShakeDir
+		return "EBaseUserMessages_UM_ShakeDir"
+	case 122: //deadlock.EBaseUserMessages_UM_WaterShake
+		return "EBaseUserMessages_UM_WaterShake"
+	case 124: //deadlock.EBaseUserMessages_UM_TextMsg
+		return "EBaseUserMessages_UM_TextMsg"
+	case 125: //deadlock.EBaseUserMessages_UM_ScreenTilt
+		return "EBaseUserMessages_UM_ScreenTilt"
+	case 128: //deadlock.EBaseUserMessages_UM_VoiceMask
+		return "EBaseUserMessages_UM_VoiceMask"
+	case 130: //deadlock.EBaseUserMessages_UM_SendAudio
+		return "EBaseUserMessages_UM_SendAudio"
+	case 131: //deadlock.EBaseUserMessages_UM_ItemPickup
+		return "EBaseUserMessages_UM_ItemPickup"
+	case 132: //deadlock.EBaseUserMessages_UM_AmmoDenied
+		return "EBaseUserMessages_UM_AmmoDenied"
+	case 134: //deadlock.EBaseUserMessages_UM_ShowMenu
+		return "EBaseUserMessages_UM_ShowMenu"
+	case 135: //deadlock.EBaseUserMessages_UM_CreditsMsg
+		return "EBaseUserMessages_UM_CreditsMsg"
+	case 136: //deadlock.EBaseEntityMessages_EM_PlayJingle
+		return "EBaseEntityMessages_EM_PlayJingle"
+	case 137: //deadlock.EBaseEntityMessages_EM_ScreenOverlay
+		return "EBaseEntityMessages_EM_ScreenOverlay"
+	case 138: //deadlock.EBaseEntityMessages_EM_RemoveAllDecals
+		return "EBaseEntityMessages_EM_RemoveAllDecals"
+	case 139: //deadlock.EBaseEntityMessages_EM_PropagateForce
+		return "EBaseEntityMessages_EM_PropagateForce"
+	case 140: //deadlock.EBaseEntityMessages_EM_DoSpark
+		return "EBaseEntityMessages_EM_DoSpark"
+	case 141: //deadlock.EBaseEntityMessages_EM_FixAngle
+		return "EBaseEntityMessages_EM_FixAngle"
+	case 142: //deadlock.EBaseUserMessages_UM_CloseCaptionPlaceholder
+		return "EBaseUserMessages_UM_CloseCaptionPlaceholder"
+	case 143: //deadlock.EBaseUserMessages_UM_CameraTransition
+		return "EBaseUserMessages_UM_CameraTransition"
+	case 144: //deadlock.EBaseUserMessages_UM_AudioParameter
+		return "EBaseUserMessages_UM_AudioParameter"
+	case 150: //deadlock.EBaseUserMessages_UM_HapticsManagerPulse
+		return "EBaseUserMessages_UM_HapticsManagerPulse"
+	case 151: //deadlock.EBaseUserMessages_UM_HapticsManagerEffect
+		return "EBaseUserMessages_UM_HapticsManagerEffect"
+	case 153: //deadlock.EBaseUserMessages_UM_UpdateCssClasses
+		return "EBaseUserMessages_UM_UpdateCssClasses"
+	case 154: //deadlock.EBaseUserMessages_UM_ServerFrameTime
+		return "EBaseUserMessages_UM_ServerFrameTime"
+	case 155: //deadlock.EBaseUserMessages_UM_LagCompensationError
+		return "EBaseUserMessages_UM_LagCompensationError"
+	case 156: //deadlock.EBaseUserMessages_UM_RequestDllStatus
+		return "EBaseUserMessages_UM_RequestDllStatus"
+	case 157: //deadlock.EBaseUserMessages_UM_RequestUtilAction
+		return "EBaseUserMessages_UM_RequestUtilAction"
+	case 160: //deadlock.EBaseUserMessages_UM_RequestInventory
+		return "EBaseUserMessages_UM_RequestInventory"
+	case 162: //deadlock.EBaseUserMessages_UM_RequestDiagnostic
+		return "EBaseUserMessages_UM_RequestDiagnostic"
+	case 200: //deadlock.EBaseGameEvents_GE_VDebugGameSessionIDEvent
+		return "EBaseGameEvents_GE_VDebugGameSessionIDEvent"
+	case 201: //deadlock.EBaseGameEvents_GE_PlaceDecalEvent
+		return "EBaseGameEvents_GE_PlaceDecalEvent"
+	case 202: //deadlock.EBaseGameEvents_GE_ClearWorldDecalsEvent
+		return "EBaseGameEvents_GE_ClearWorldDecalsEvent"
+	case 203: //deadlock.EBaseGameEvents_GE_ClearEntityDecalsEvent
+		return "EBaseGameEvents_GE_ClearEntityDecalsEvent"
+	case 204: //deadlock.EBaseGameEvents_GE_ClearDecalsForSkeletonInstanceEvent
+		return "EBaseGameEvents_GE_ClearDecalsForSkeletonInstanceEvent"
+	case 205: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEventList
+		return "EBaseGameEvents_GE_Source1LegacyGameEventList"
+	case 206: //deadlock.EBaseGameEvents_GE_Source1LegacyListenEvents
+		return "EBaseGameEvents_GE_Source1LegacyListenEvents"
+	case 207: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEvent
+		return "EBaseGameEvents_GE_Source1LegacyGameEvent"
+	case 208: //deadlock.EBaseGameEvents_GE_SosStartSoundEvent
+		return "EBaseGameEvents_GE_SosStartSoundEvent"
+	case 209: //deadlock.EBaseGameEvents_GE_SosStopSoundEvent
+		return "EBaseGameEvents_GE_SosStopSoundEvent"
+	case 210: //deadlock.EBaseGameEvents_GE_SosSetSoundEventParams
+		return "EBaseGameEvents_GE_SosSetSoundEventParams"
+	case 211: //deadlock.EBaseGameEvents_GE_SosSetLibraryStackFields
+		return "EBaseGameEvents_GE_SosSetLibraryStackFields"
+	case 212: //deadlock.EBaseGameEvents_GE_SosStopSoundEventHash
+		return "EBaseGameEvents_GE_SosStopSoundEventHash"
+
+	}
+	return "UNKNOWN"
+}
+
+// TODO: Cleanup
+func (c *Callbacks) toPacketString(t int32, buf []byte) string {
+	switch t {
+	case 0: //deadlock.NET_Messages_net_NOP
+		msg := &deadlock.CNETMsg_NOP{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 3: //deadlock.NET_Messages_net_SplitScreenUser
+		msg := &deadlock.CNETMsg_SplitScreenUser{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 4: //deadlock.NET_Messages_net_Tick
+		msg := &deadlock.CNETMsg_Tick{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 5: //deadlock.NET_Messages_net_StringCmd
+		msg := &deadlock.CNETMsg_StringCmd{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 6: //deadlock.NET_Messages_net_SetConVar
+		msg := &deadlock.CNETMsg_SetConVar{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 7: //deadlock.NET_Messages_net_SignonState
+		msg := &deadlock.CNETMsg_SignonState{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 8: //deadlock.NET_Messages_net_SpawnGroup_Load
+		msg := &deadlock.CNETMsg_SpawnGroup_Load{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 9: //deadlock.NET_Messages_net_SpawnGroup_ManifestUpdate
+		msg := &deadlock.CNETMsg_SpawnGroup_ManifestUpdate{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 11: //deadlock.NET_Messages_net_SpawnGroup_SetCreationTick
+		msg := &deadlock.CNETMsg_SpawnGroup_SetCreationTick{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 12: //deadlock.NET_Messages_net_SpawnGroup_Unload
+		msg := &deadlock.CNETMsg_SpawnGroup_Unload{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 13: //deadlock.NET_Messages_net_SpawnGroup_LoadCompleted
+		msg := &deadlock.CNETMsg_SpawnGroup_LoadCompleted{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 15: //deadlock.NET_Messages_net_DebugOverlay
+		msg := &deadlock.CNETMsg_DebugOverlay{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 40: //deadlock.SVC_Messages_svc_ServerInfo
+		msg := &deadlock.CSVCMsg_ServerInfo{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 41: //deadlock.SVC_Messages_svc_FlattenedSerializer
+		msg := &deadlock.CSVCMsg_FlattenedSerializer{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 42: //deadlock.SVC_Messages_svc_ClassInfo
+		msg := &deadlock.CSVCMsg_ClassInfo{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 43: //deadlock.SVC_Messages_svc_SetPause
+		msg := &deadlock.CSVCMsg_SetPause{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 44: //deadlock.SVC_Messages_svc_CreateStringTable
+		msg := &deadlock.CSVCMsg_CreateStringTable{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 45: //deadlock.SVC_Messages_svc_UpdateStringTable
+		msg := &deadlock.CSVCMsg_UpdateStringTable{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 46: //deadlock.SVC_Messages_svc_VoiceInit
+		msg := &deadlock.CSVCMsg_VoiceInit{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 47: //deadlock.SVC_Messages_svc_VoiceData
+		msg := &deadlock.CSVCMsg_VoiceData{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 48: //deadlock.SVC_Messages_svc_Print
+		msg := &deadlock.CSVCMsg_Print{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 49: //deadlock.SVC_Messages_svc_Sounds
+		msg := &deadlock.CSVCMsg_Sounds{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 50: //deadlock.SVC_Messages_svc_SetView
+		msg := &deadlock.CSVCMsg_SetView{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 51: //deadlock.SVC_Messages_svc_ClearAllStringTables
+		msg := &deadlock.CSVCMsg_ClearAllStringTables{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 52: //deadlock.SVC_Messages_svc_CmdKeyValues
+		msg := &deadlock.CSVCMsg_CmdKeyValues{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 53: //deadlock.SVC_Messages_svc_BSPDecal
+		msg := &deadlock.CSVCMsg_BSPDecal{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 54: //deadlock.SVC_Messages_svc_SplitScreen
+		msg := &deadlock.CSVCMsg_SplitScreen{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 55: //deadlock.SVC_Messages_svc_PacketEntities
+		msg := &deadlock.CSVCMsg_PacketEntities{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 56: //deadlock.SVC_Messages_svc_Prefetch
+		msg := &deadlock.CSVCMsg_Prefetch{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 57: //deadlock.SVC_Messages_svc_Menu
+		msg := &deadlock.CSVCMsg_Menu{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 58: //deadlock.SVC_Messages_svc_GetCvarValue
+		msg := &deadlock.CSVCMsg_GetCvarValue{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 59: //deadlock.SVC_Messages_svc_StopSound
+		msg := &deadlock.CSVCMsg_StopSound{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 60: //deadlock.SVC_Messages_svc_PeerList
+		msg := &deadlock.CSVCMsg_PeerList{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 61: //deadlock.SVC_Messages_svc_PacketReliable
+		msg := &deadlock.CSVCMsg_PacketReliable{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 62: //deadlock.SVC_Messages_svc_HLTVStatus
+		msg := &deadlock.CSVCMsg_HLTVStatus{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 63: //deadlock.SVC_Messages_svc_ServerSteamID
+		msg := &deadlock.CSVCMsg_ServerSteamID{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 70: //deadlock.SVC_Messages_svc_FullFrameSplit
+		msg := &deadlock.CSVCMsg_FullFrameSplit{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 71: //deadlock.SVC_Messages_svc_RconServerDetails
+		msg := &deadlock.CSVCMsg_RconServerDetails{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 72: //deadlock.SVC_Messages_svc_UserMessage
+		msg := &deadlock.CSVCMsg_UserMessage{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 74: //deadlock.SVC_Messages_svc_Broadcast_Command
+		msg := &deadlock.CSVCMsg_Broadcast_Command{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 75: //deadlock.SVC_Messages_svc_HltvFixupOperatorStatus
+		msg := &deadlock.CSVCMsg_HltvFixupOperatorStatus{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 101: //deadlock.EBaseUserMessages_UM_AchievementEvent
+		msg := &deadlock.CUserMessageAchievementEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 102: //deadlock.EBaseUserMessages_UM_CloseCaption
+		msg := &deadlock.CUserMessageCloseCaption{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 103: //deadlock.EBaseUserMessages_UM_CloseCaptionDirect
+		msg := &deadlock.CUserMessageCloseCaptionDirect{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 104: //deadlock.EBaseUserMessages_UM_CurrentTimescale
+		msg := &deadlock.CUserMessageCurrentTimescale{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 105: //deadlock.EBaseUserMessages_UM_DesiredTimescale
+		msg := &deadlock.CUserMessageDesiredTimescale{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 106: //deadlock.EBaseUserMessages_UM_Fade
+		msg := &deadlock.CUserMessageFade{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 107: //deadlock.EBaseUserMessages_UM_GameTitle
+		msg := &deadlock.CUserMessageGameTitle{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 110: //deadlock.EBaseUserMessages_UM_HudMsg
+		msg := &deadlock.CUserMessageHudMsg{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 111: //deadlock.EBaseUserMessages_UM_HudText
+		msg := &deadlock.CUserMessageHudText{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 113: //deadlock.EBaseUserMessages_UM_ColoredText
+		msg := &deadlock.CUserMessageColoredText{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 114: //deadlock.EBaseUserMessages_UM_RequestState
+		msg := &deadlock.CUserMessageRequestState{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 115: //deadlock.EBaseUserMessages_UM_ResetHUD
+		msg := &deadlock.CUserMessageResetHUD{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 116: //deadlock.EBaseUserMessages_UM_Rumble
+		msg := &deadlock.CUserMessageRumble{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 117: //deadlock.EBaseUserMessages_UM_SayText
+		msg := &deadlock.CUserMessageSayText{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 118: //deadlock.EBaseUserMessages_UM_SayText2
+		msg := &deadlock.CUserMessageSayText2{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 119: //deadlock.EBaseUserMessages_UM_SayTextChannel
+		msg := &deadlock.CUserMessageSayTextChannel{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 120: //deadlock.EBaseUserMessages_UM_Shake
+		msg := &deadlock.CUserMessageShake{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 121: //deadlock.EBaseUserMessages_UM_ShakeDir
+		msg := &deadlock.CUserMessageShakeDir{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 122: //deadlock.EBaseUserMessages_UM_WaterShake
+		msg := &deadlock.CUserMessageWaterShake{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 124: //deadlock.EBaseUserMessages_UM_TextMsg
+		msg := &deadlock.CUserMessageTextMsg{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 125: //deadlock.EBaseUserMessages_UM_ScreenTilt
+		msg := &deadlock.CUserMessageScreenTilt{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 128: //deadlock.EBaseUserMessages_UM_VoiceMask
+		msg := &deadlock.CUserMessageVoiceMask{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 130: //deadlock.EBaseUserMessages_UM_SendAudio
+		msg := &deadlock.CUserMessageSendAudio{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 131: //deadlock.EBaseUserMessages_UM_ItemPickup
+		msg := &deadlock.CUserMessageItemPickup{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 132: //deadlock.EBaseUserMessages_UM_AmmoDenied
+		msg := &deadlock.CUserMessageAmmoDenied{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 134: //deadlock.EBaseUserMessages_UM_ShowMenu
+		msg := &deadlock.CUserMessageShowMenu{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 135: //deadlock.EBaseUserMessages_UM_CreditsMsg
+		msg := &deadlock.CUserMessageCreditsMsg{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 136: //deadlock.EBaseEntityMessages_EM_PlayJingle
+		msg := &deadlock.CEntityMessagePlayJingle{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 137: //deadlock.EBaseEntityMessages_EM_ScreenOverlay
+		msg := &deadlock.CEntityMessageScreenOverlay{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 138: //deadlock.EBaseEntityMessages_EM_RemoveAllDecals
+		msg := &deadlock.CEntityMessageRemoveAllDecals{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 139: //deadlock.EBaseEntityMessages_EM_PropagateForce
+		msg := &deadlock.CEntityMessagePropagateForce{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 140: //deadlock.EBaseEntityMessages_EM_DoSpark
+		msg := &deadlock.CEntityMessageDoSpark{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 141: //deadlock.EBaseEntityMessages_EM_FixAngle
+		msg := &deadlock.CEntityMessageFixAngle{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 142: //deadlock.EBaseUserMessages_UM_CloseCaptionPlaceholder
+		msg := &deadlock.CUserMessageCloseCaptionPlaceholder{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 143: //deadlock.EBaseUserMessages_UM_CameraTransition
+		msg := &deadlock.CUserMessageCameraTransition{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 144: //deadlock.EBaseUserMessages_UM_AudioParameter
+		msg := &deadlock.CUserMessageAudioParameter{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 150: //deadlock.EBaseUserMessages_UM_HapticsManagerPulse
+		msg := &deadlock.CUserMessageHapticsManagerPulse{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 151: //deadlock.EBaseUserMessages_UM_HapticsManagerEffect
+		msg := &deadlock.CUserMessageHapticsManagerEffect{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 153: //deadlock.EBaseUserMessages_UM_UpdateCssClasses
+		msg := &deadlock.CUserMessageUpdateCssClasses{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 154: //deadlock.EBaseUserMessages_UM_ServerFrameTime
+		msg := &deadlock.CUserMessageServerFrameTime{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 155: //deadlock.EBaseUserMessages_UM_LagCompensationError
+		msg := &deadlock.CUserMessageLagCompensationError{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 156: //deadlock.EBaseUserMessages_UM_RequestDllStatus
+		msg := &deadlock.CUserMessageRequestDllStatus{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 157: //deadlock.EBaseUserMessages_UM_RequestUtilAction
+		msg := &deadlock.CUserMessageRequestUtilAction{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 160: //deadlock.EBaseUserMessages_UM_RequestInventory
+		msg := &deadlock.CUserMessageRequestInventory{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 162: //deadlock.EBaseUserMessages_UM_RequestDiagnostic
+		msg := &deadlock.CUserMessageRequestDiagnostic{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 200: //deadlock.EBaseGameEvents_GE_VDebugGameSessionIDEvent
+		msg := &deadlock.CMsgVDebugGameSessionIDEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 201: //deadlock.EBaseGameEvents_GE_PlaceDecalEvent
+		msg := &deadlock.CMsgPlaceDecalEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 202: //deadlock.EBaseGameEvents_GE_ClearWorldDecalsEvent
+		msg := &deadlock.CMsgClearWorldDecalsEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 203: //deadlock.EBaseGameEvents_GE_ClearEntityDecalsEvent
+		msg := &deadlock.CMsgClearEntityDecalsEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 204: //deadlock.EBaseGameEvents_GE_ClearDecalsForSkeletonInstanceEvent
+		msg := &deadlock.CMsgClearDecalsForSkeletonInstanceEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 205: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEventList
+		msg := &deadlock.CMsgSource1LegacyGameEventList{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 206: //deadlock.EBaseGameEvents_GE_Source1LegacyListenEvents
+		msg := &deadlock.CMsgSource1LegacyListenEvents{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 207: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEvent
+		msg := &deadlock.CMsgSource1LegacyGameEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 208: //deadlock.EBaseGameEvents_GE_SosStartSoundEvent
+		msg := &deadlock.CMsgSosStartSoundEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 209: //deadlock.EBaseGameEvents_GE_SosStopSoundEvent
+		msg := &deadlock.CMsgSosStopSoundEvent{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 210: //deadlock.EBaseGameEvents_GE_SosSetSoundEventParams
+		msg := &deadlock.CMsgSosSetSoundEventParams{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 211: //deadlock.EBaseGameEvents_GE_SosSetLibraryStackFields
+		msg := &deadlock.CMsgSosSetLibraryStackFields{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+	case 212: //deadlock.EBaseGameEvents_GE_SosStopSoundEventHash
+		msg := &deadlock.CMsgSosStopSoundEventHash{}
+		c.pb.SetBuf(buf)
+		if err := c.pb.Unmarshal(msg); err != nil {
+			return "ERROR"
+		}
+		return msg.String()
+
+	}
+	return "UNKNOWN"
+}
+
 func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 	switch t {
 	case 0: // deadlock.NET_Messages_net_NOP

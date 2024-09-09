@@ -60,6 +60,59 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
   return nil
 }
 
+// TODO: Cleanup
+func (c *Callbacks) getDemoTypeName(t int32) string {
+  switch t {
+{{ range .DemoTypes }} case {{ .Id }}: //deadlock.{{ .EnumName }}
+  return "{{ .EnumName }}"
+{{ end }}
+  }
+  return "UNKNOWN"
+}
+
+// TODO: Cleanup
+func (c *Callbacks) toDemoString(t int32, buf []byte) string {
+  switch t {
+{{ range .DemoTypes }} case {{ .Id }}: //deadlock.{{ .EnumName }}
+    msg := &deadlock.{{ .TypeName }}{}
+    c.pb.SetBuf(buf)
+    if err := c.pb.Unmarshal(msg); err != nil {
+      return "ERROR"
+    }
+    return msg.String()
+{{ end }}
+  }
+  return "UNKNOWN"
+}
+
+
+// TODO: Cleanup
+func (c *Callbacks) getPacketTypeName(t int32) string {
+  switch t {
+{{ range .PacketTypes }} case {{ .Id }}: //deadlock.{{ .EnumName }}
+    return "{{ .EnumName }}"
+{{ end }}
+  }
+    return "UNKNOWN"
+}
+
+// TODO: Cleanup
+func (c *Callbacks) toPacketString(t int32, buf []byte) string {
+  switch t {
+{{ range .PacketTypes }} case {{ .Id }}: //deadlock.{{ .EnumName }}
+    msg := &deadlock.{{ .TypeName }}{}
+    c.pb.SetBuf(buf)
+    if err := c.pb.Unmarshal(msg); err != nil {
+      return "ERROR"
+    }
+    return msg.String()
+{{ end }}
+  }
+  return "UNKNOWN"
+}
+
+
+
 func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
   switch t {
 {{ range .PacketTypes }}  case {{ .Id }}: // deadlock.{{ .EnumName }}
