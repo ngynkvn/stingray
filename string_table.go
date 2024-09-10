@@ -111,11 +111,11 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTab
 	}
 
 	// Emit events for modifier table entry updates
-	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
-	}
+	// if t.name == "ActiveModifiers" {
+	// 	if err := p.emitModifierTableEvents(items); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
@@ -156,11 +156,11 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 	}
 
 	// Emit events for modifier table entry updates
-	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
-	}
+	// if t.name == "ActiveModifiers" {
+	// 	if err := p.emitModifierTableEvents(items); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
@@ -187,7 +187,8 @@ func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed b
 	keys := make([]string, 0, stringtableKeyHistorySize)
 
 	// Some tables have no data
-	if len(buf) == 0 {
+	// TODO: why do this? https://github.com/Rupas1k/source2-demo/blob/master/source2-demo/src/string_table/mod.rs#L63
+	if len(buf) == 0 || name == "decalprecache" {
 		return items
 	}
 
