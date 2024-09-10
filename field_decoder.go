@@ -4,8 +4,10 @@ import (
 	"math"
 )
 
-type fieldDecoder func(*reader) interface{}
-type fieldFactory func(*field) fieldDecoder
+type (
+	fieldDecoder func(*reader) interface{}
+	fieldFactory func(*field) fieldDecoder
+)
 
 var fieldTypeFactories = map[string]fieldFactory{
 	"float32":                  floatFactory,
@@ -156,7 +158,28 @@ func qangleFactory(f *field) fieldDecoder {
 			}
 		}
 	}
-
+	if f.encoder == "qangle_precise" {
+		return func(r *reader) interface{} {
+			var (
+				rx = r.readBoolean()
+				ry = r.readBoolean()
+				rz = r.readBoolean()
+				x  float32
+				y  float32
+				z  float32
+			)
+			if rx {
+				x = r.readAngle(20)
+			}
+			if ry {
+				y = r.readAngle(20)
+			}
+			if rz {
+				z = r.readAngle(20)
+			}
+			return []float32{x, y, z}
+		}
+	}
 	if f.bitCount != nil && *f.bitCount != 0 {
 		n := uint32(*f.bitCount)
 		return func(r *reader) interface{} {
