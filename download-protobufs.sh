@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-ARCHIVE_LINK=https://github.com/SteamDatabase/Protobufs/archive/master.tar.gz
+ARCHIVE_LINK=https://github.com/SteamDatabase/GameTracking-Deadlock/archive/master.tar.gz
 
 mkdir -p ./deadlock/tmp
 
@@ -11,7 +11,7 @@ else
   curl -L -o - ${ARCHIVE_LINK} | tar -xz --strip-components=1 -C ./deadlock/tmp
 fi
 
-cp -a ./deadlock/tmp/deadlock/*.proto ./deadlock/ && rm -rf ./deadlock/tmp
+cp -a ./deadlock/tmp/Protobufs/*.proto ./deadlock/ && rm -rf ./deadlock/tmp
 
 rm -rf \
   deadlock/base_gcmessages.proto \

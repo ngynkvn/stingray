@@ -5,3 +5,4 @@
 /vendor
 /testdata/*.dem*
 .vscode/
+.DS_Store

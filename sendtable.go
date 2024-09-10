@@ -2,7 +2,7 @@ package stingray
 
 import (
 	"github.com/ngynkvn/stingray/deadlock"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 var pointerTypes = map[string]bool{

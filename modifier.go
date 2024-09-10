@@ -1,8 +1,8 @@
 package stingray
 
 import (
-	"github.com/gogo/protobuf/proto"
 	"github.com/ngynkvn/stingray/deadlock"
+	"google.golang.org/protobuf/proto"
 )
 
 type ModifierTableEntryHandler func(msg *deadlock.CModifierTableEntry) error
@@ -18,7 +18,7 @@ func (p *Parser) OnModifierTableEntry(fn ModifierTableEntryHandler) {
 func (p *Parser) emitModifierTableEvents(items []*stringTableItem) error {
 	for _, item := range items {
 		msg := &deadlock.CModifierTableEntry{}
-		if err := proto.NewBuffer(item.Value).Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(item.Value, msg); err != nil {
 			_debugf("unable to unmarshal ModifierBuffTableEntry: %s", err)
 			continue
 		}

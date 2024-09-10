@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -79,6 +80,10 @@ var messageTypes = []*deadlockMessage{
 		enumName:   "NET_Messages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
+			switch s {
+			case "NET_Messages_net_Disconnect_Legacy":
+				return "", false
+			}
 			return strings.Replace(s, "NET_Messages_net_", "CNETMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
@@ -91,6 +96,10 @@ var messageTypes = []*deadlockMessage{
 		enumName:   "SVC_Messages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
+			switch s {
+			case "SVC_Messages_svc_UserCmds":
+				return "", false
+			}
 			return strings.Replace(s, "SVC_Messages_svc_", "CSVCMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
@@ -104,14 +113,33 @@ var messageTypes = []*deadlockMessage{
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
 			switch s {
-			case "EBaseUserMessages_UM_ParticleManager":
+			case "EBaseUserMessages_UM_ParticleManager": // CUserMsg_ParticleManager ??
 				return "", false
-			case "EBaseUserMessages_UM_HudError":
-				return "", false // CUserMsg_HudError ??
-			case "EBaseUserMessages_UM_CustomGameEvent":
-				return "", false // CClientMsg_CustomGameEvent ?
+			case "EBaseUserMessages_UM_HudError": // CUserMsg_HudError ??
+				return "", false
+			case "EBaseUserMessages_UM_CustomGameEvent": // CClientMsg_CustomGameEvent ?
+				return "", false
 			case "EBaseUserMessages_UM_MAX_BASE":
 				return "", false
+			case "EBaseUserMessages_UM_AnimGraphUpdate":
+				return "", false
+			case "EBaseUserMessages_UM_InventoryResponse":
+				return "", false
+			case "EBaseUserMessages_UM_DllStatusResponse":
+				return "", false
+			case "EBaseUserMessages_UM_CommandQueueState":
+				return "", false
+			case "EBaseUserMessages_UM_UtilActionResponse":
+				return "", false
+			case "EBaseUserMessages_UM_DiagnosticResponse":
+				return "", false
+				// TODO: Figure out what these types are
+			case "EBaseUserMessages_UM_NotifyResponseFound":
+				return "CUserMessage_NotifyResponseFound", false
+			case "EBaseUserMessages_UM_ExtraUserData":
+				return "CUserMessage_ExtraUserData", false
+			case "EBaseUserMessages_UM_PlayResponseConditional":
+				return "CUserMessage_PlayResponseConditional", false
 			}
 			return strings.Replace(s, "EBaseUserMessages_UM_", "CUserMessage", 1), true
 		},
@@ -145,29 +173,31 @@ var messageTypes = []*deadlockMessage{
 		isPacket: true,
 	},
 	{
-		typeRe:     regexp.MustCompile("^CdeadlockUserMsg"),
-		enumName:   "EdeadlockUserMessages",
+		typeRe:     regexp.MustCompile("^CCitadelUserMsg"),
+		enumName:   "CitadelUserMessageIds",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
-			switch s {
-			case "EdeadlockUserMessages_DOTA_UM_AddUnitToSelection":
-				return "", false
-			case "EdeadlockUserMessages_DOTA_UM_CombatLogData":
-				return "", false
-			case "EdeadlockUserMessages_DOTA_UM_CharacterSpeakConcept":
-				return "", false
-			case "EdeadlockUserMessages_DOTA_UM_TournamentDrop":
-				return "CMsgGCToClientTournamentItemDrop", true
-			case "EdeadlockUserMessages_DOTA_UM_StatsHeroDetails":
-				return "CdeadlockUserMsg_StatsHeroMinuteDetails", true
-			case "EdeadlockUserMessages_DOTA_UM_CombatLogDataHLTV":
-				return "CMsgdeadlockCombatLogEntry", true
-			case "EdeadlockUserMessages_DOTA_UM_MatchMetadata":
-				return "CdeadlockMatchMetadataFile", true
-			case "EdeadlockUserMessages_DOTA_UM_MatchDetails":
+			if slices.Contains([]string{
+				"CitadelUserMessageIds_k_EUserMsg_AbilityFailed",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStartSoundEvent",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStopSoundEvent",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStopSoundEventHash",
+			}, s) {
 				return "", false
 			}
-			return strings.Replace(s, "EdeadlockUserMessages_DOTA_UM_", "CDOTAUserMsg_", 1), true
+			if slices.Contains([]string{
+				"CitadelUserMessageIds_k_EUserMsg_CurrencyChanged",
+				"CitadelUserMessageIds_k_EUserMsg_ObjectiveMask",
+				"CitadelUserMessageIds_k_EUserMsg_AbilityNotify",
+				"CitadelUserMessageIds_k_EUserMsg_ModifierApplied",
+				"CitadelUserMessageIds_k_EUserMsg_GameOver",
+				"CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied",
+				"CitadelUserMessageIds_k_EUserMsg_Damage",
+				"CitadelUserMessageIds_k_EUserMsg_BulletHit",
+			}, s) {
+				return strings.Replace(s, "CitadelUserMessageIds_k_EUserMsg_", "CCitadelUserMessage_", 1), true
+			}
+			return strings.Replace(s, "CitadelUserMessageIds_k_EUserMsg_", "CCitadelUserMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
 			return "", false
@@ -178,7 +208,10 @@ var messageTypes = []*deadlockMessage{
 
 // messageTypeNames will be populated during type discovery, holding names of
 // known struct types so that we never write invalid types to the output file
-var messageTypeNames = map[string]bool{}
+var (
+	messageTypeNames = map[string]bool{}
+	marked           = map[string]bool{}
+)
 
 // findMessageByTypeName finds a message type by type name (ex. CDemoPacket)
 func findMessageByTypeName(s string) (*deadlockMessage, bool) {
@@ -334,6 +367,7 @@ func discoverTypes(protoPath string) {
 							typeName := t.Name.String()
 							// if _, ok := findMessageByTypeName(typeName); ok {
 							messageTypeNames[typeName] = true
+							marked[typeName] = false
 							//}
 
 						case *ast.ValueSpec:

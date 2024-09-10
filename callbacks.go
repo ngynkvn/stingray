@@ -1,138 +1,173 @@
 package stingray
 
 import (
-	"github.com/golang/protobuf/proto"
 	"github.com/ngynkvn/stingray/deadlock"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 	"strconv"
 )
 
 // Callbacks decodes and routes replay events to callback functions
 type Callbacks struct {
-	onCDemoStop                               []func(*deadlock.CDemoStop) error
-	onCDemoFileHeader                         []func(*deadlock.CDemoFileHeader) error
-	onCDemoFileInfo                           []func(*deadlock.CDemoFileInfo) error
-	onCDemoSyncTick                           []func(*deadlock.CDemoSyncTick) error
-	onCDemoSendTables                         []func(*deadlock.CDemoSendTables) error
-	onCDemoClassInfo                          []func(*deadlock.CDemoClassInfo) error
-	onCDemoStringTables                       []func(*deadlock.CDemoStringTables) error
-	onCDemoPacket                             []func(*deadlock.CDemoPacket) error
-	onCDemoSignonPacket                       []func(*deadlock.CDemoPacket) error
-	onCDemoConsoleCmd                         []func(*deadlock.CDemoConsoleCmd) error
-	onCDemoCustomData                         []func(*deadlock.CDemoCustomData) error
-	onCDemoCustomDataCallbacks                []func(*deadlock.CDemoCustomDataCallbacks) error
-	onCDemoUserCmd                            []func(*deadlock.CDemoUserCmd) error
-	onCDemoFullPacket                         []func(*deadlock.CDemoFullPacket) error
-	onCDemoSaveGame                           []func(*deadlock.CDemoSaveGame) error
-	onCDemoSpawnGroups                        []func(*deadlock.CDemoSpawnGroups) error
-	onCDemoAnimationData                      []func(*deadlock.CDemoAnimationData) error
-	onCDemoAnimationHeader                    []func(*deadlock.CDemoAnimationHeader) error
-	onCNETMsg_NOP                             []func(*deadlock.CNETMsg_NOP) error
-	onCNETMsg_SplitScreenUser                 []func(*deadlock.CNETMsg_SplitScreenUser) error
-	onCNETMsg_Tick                            []func(*deadlock.CNETMsg_Tick) error
-	onCNETMsg_StringCmd                       []func(*deadlock.CNETMsg_StringCmd) error
-	onCNETMsg_SetConVar                       []func(*deadlock.CNETMsg_SetConVar) error
-	onCNETMsg_SignonState                     []func(*deadlock.CNETMsg_SignonState) error
-	onCNETMsg_SpawnGroup_Load                 []func(*deadlock.CNETMsg_SpawnGroup_Load) error
-	onCNETMsg_SpawnGroup_ManifestUpdate       []func(*deadlock.CNETMsg_SpawnGroup_ManifestUpdate) error
-	onCNETMsg_SpawnGroup_SetCreationTick      []func(*deadlock.CNETMsg_SpawnGroup_SetCreationTick) error
-	onCNETMsg_SpawnGroup_Unload               []func(*deadlock.CNETMsg_SpawnGroup_Unload) error
-	onCNETMsg_SpawnGroup_LoadCompleted        []func(*deadlock.CNETMsg_SpawnGroup_LoadCompleted) error
-	onCNETMsg_DebugOverlay                    []func(*deadlock.CNETMsg_DebugOverlay) error
-	onCSVCMsg_ServerInfo                      []func(*deadlock.CSVCMsg_ServerInfo) error
-	onCSVCMsg_FlattenedSerializer             []func(*deadlock.CSVCMsg_FlattenedSerializer) error
-	onCSVCMsg_ClassInfo                       []func(*deadlock.CSVCMsg_ClassInfo) error
-	onCSVCMsg_SetPause                        []func(*deadlock.CSVCMsg_SetPause) error
-	onCSVCMsg_CreateStringTable               []func(*deadlock.CSVCMsg_CreateStringTable) error
-	onCSVCMsg_UpdateStringTable               []func(*deadlock.CSVCMsg_UpdateStringTable) error
-	onCSVCMsg_VoiceInit                       []func(*deadlock.CSVCMsg_VoiceInit) error
-	onCSVCMsg_VoiceData                       []func(*deadlock.CSVCMsg_VoiceData) error
-	onCSVCMsg_Print                           []func(*deadlock.CSVCMsg_Print) error
-	onCSVCMsg_Sounds                          []func(*deadlock.CSVCMsg_Sounds) error
-	onCSVCMsg_SetView                         []func(*deadlock.CSVCMsg_SetView) error
-	onCSVCMsg_ClearAllStringTables            []func(*deadlock.CSVCMsg_ClearAllStringTables) error
-	onCSVCMsg_CmdKeyValues                    []func(*deadlock.CSVCMsg_CmdKeyValues) error
-	onCSVCMsg_BSPDecal                        []func(*deadlock.CSVCMsg_BSPDecal) error
-	onCSVCMsg_SplitScreen                     []func(*deadlock.CSVCMsg_SplitScreen) error
-	onCSVCMsg_PacketEntities                  []func(*deadlock.CSVCMsg_PacketEntities) error
-	onCSVCMsg_Prefetch                        []func(*deadlock.CSVCMsg_Prefetch) error
-	onCSVCMsg_Menu                            []func(*deadlock.CSVCMsg_Menu) error
-	onCSVCMsg_GetCvarValue                    []func(*deadlock.CSVCMsg_GetCvarValue) error
-	onCSVCMsg_StopSound                       []func(*deadlock.CSVCMsg_StopSound) error
-	onCSVCMsg_PeerList                        []func(*deadlock.CSVCMsg_PeerList) error
-	onCSVCMsg_PacketReliable                  []func(*deadlock.CSVCMsg_PacketReliable) error
-	onCSVCMsg_HLTVStatus                      []func(*deadlock.CSVCMsg_HLTVStatus) error
-	onCSVCMsg_ServerSteamID                   []func(*deadlock.CSVCMsg_ServerSteamID) error
-	onCSVCMsg_FullFrameSplit                  []func(*deadlock.CSVCMsg_FullFrameSplit) error
-	onCSVCMsg_RconServerDetails               []func(*deadlock.CSVCMsg_RconServerDetails) error
-	onCSVCMsg_UserMessage                     []func(*deadlock.CSVCMsg_UserMessage) error
-	onCSVCMsg_Broadcast_Command               []func(*deadlock.CSVCMsg_Broadcast_Command) error
-	onCSVCMsg_HltvFixupOperatorStatus         []func(*deadlock.CSVCMsg_HltvFixupOperatorStatus) error
-	onCUserMessageAchievementEvent            []func(*deadlock.CUserMessageAchievementEvent) error
-	onCUserMessageCloseCaption                []func(*deadlock.CUserMessageCloseCaption) error
-	onCUserMessageCloseCaptionDirect          []func(*deadlock.CUserMessageCloseCaptionDirect) error
-	onCUserMessageCurrentTimescale            []func(*deadlock.CUserMessageCurrentTimescale) error
-	onCUserMessageDesiredTimescale            []func(*deadlock.CUserMessageDesiredTimescale) error
-	onCUserMessageFade                        []func(*deadlock.CUserMessageFade) error
-	onCUserMessageGameTitle                   []func(*deadlock.CUserMessageGameTitle) error
-	onCUserMessageHudMsg                      []func(*deadlock.CUserMessageHudMsg) error
-	onCUserMessageHudText                     []func(*deadlock.CUserMessageHudText) error
-	onCUserMessageColoredText                 []func(*deadlock.CUserMessageColoredText) error
-	onCUserMessageRequestState                []func(*deadlock.CUserMessageRequestState) error
-	onCUserMessageResetHUD                    []func(*deadlock.CUserMessageResetHUD) error
-	onCUserMessageRumble                      []func(*deadlock.CUserMessageRumble) error
-	onCUserMessageSayText                     []func(*deadlock.CUserMessageSayText) error
-	onCUserMessageSayText2                    []func(*deadlock.CUserMessageSayText2) error
-	onCUserMessageSayTextChannel              []func(*deadlock.CUserMessageSayTextChannel) error
-	onCUserMessageShake                       []func(*deadlock.CUserMessageShake) error
-	onCUserMessageShakeDir                    []func(*deadlock.CUserMessageShakeDir) error
-	onCUserMessageWaterShake                  []func(*deadlock.CUserMessageWaterShake) error
-	onCUserMessageTextMsg                     []func(*deadlock.CUserMessageTextMsg) error
-	onCUserMessageScreenTilt                  []func(*deadlock.CUserMessageScreenTilt) error
-	onCUserMessageVoiceMask                   []func(*deadlock.CUserMessageVoiceMask) error
-	onCUserMessageSendAudio                   []func(*deadlock.CUserMessageSendAudio) error
-	onCUserMessageItemPickup                  []func(*deadlock.CUserMessageItemPickup) error
-	onCUserMessageAmmoDenied                  []func(*deadlock.CUserMessageAmmoDenied) error
-	onCUserMessageShowMenu                    []func(*deadlock.CUserMessageShowMenu) error
-	onCUserMessageCreditsMsg                  []func(*deadlock.CUserMessageCreditsMsg) error
-	onCEntityMessagePlayJingle                []func(*deadlock.CEntityMessagePlayJingle) error
-	onCEntityMessageScreenOverlay             []func(*deadlock.CEntityMessageScreenOverlay) error
-	onCEntityMessageRemoveAllDecals           []func(*deadlock.CEntityMessageRemoveAllDecals) error
-	onCEntityMessagePropagateForce            []func(*deadlock.CEntityMessagePropagateForce) error
-	onCEntityMessageDoSpark                   []func(*deadlock.CEntityMessageDoSpark) error
-	onCEntityMessageFixAngle                  []func(*deadlock.CEntityMessageFixAngle) error
-	onCUserMessageCloseCaptionPlaceholder     []func(*deadlock.CUserMessageCloseCaptionPlaceholder) error
-	onCUserMessageCameraTransition            []func(*deadlock.CUserMessageCameraTransition) error
-	onCUserMessageAudioParameter              []func(*deadlock.CUserMessageAudioParameter) error
-	onCUserMessageHapticsManagerPulse         []func(*deadlock.CUserMessageHapticsManagerPulse) error
-	onCUserMessageHapticsManagerEffect        []func(*deadlock.CUserMessageHapticsManagerEffect) error
-	onCUserMessageUpdateCssClasses            []func(*deadlock.CUserMessageUpdateCssClasses) error
-	onCUserMessageServerFrameTime             []func(*deadlock.CUserMessageServerFrameTime) error
-	onCUserMessageLagCompensationError        []func(*deadlock.CUserMessageLagCompensationError) error
-	onCUserMessageRequestDllStatus            []func(*deadlock.CUserMessageRequestDllStatus) error
-	onCUserMessageRequestUtilAction           []func(*deadlock.CUserMessageRequestUtilAction) error
-	onCUserMessageRequestInventory            []func(*deadlock.CUserMessageRequestInventory) error
-	onCUserMessageRequestDiagnostic           []func(*deadlock.CUserMessageRequestDiagnostic) error
-	onCMsgVDebugGameSessionIDEvent            []func(*deadlock.CMsgVDebugGameSessionIDEvent) error
-	onCMsgPlaceDecalEvent                     []func(*deadlock.CMsgPlaceDecalEvent) error
-	onCMsgClearWorldDecalsEvent               []func(*deadlock.CMsgClearWorldDecalsEvent) error
-	onCMsgClearEntityDecalsEvent              []func(*deadlock.CMsgClearEntityDecalsEvent) error
-	onCMsgClearDecalsForSkeletonInstanceEvent []func(*deadlock.CMsgClearDecalsForSkeletonInstanceEvent) error
-	onCMsgSource1LegacyGameEventList          []func(*deadlock.CMsgSource1LegacyGameEventList) error
-	onCMsgSource1LegacyListenEvents           []func(*deadlock.CMsgSource1LegacyListenEvents) error
-	onCMsgSource1LegacyGameEvent              []func(*deadlock.CMsgSource1LegacyGameEvent) error
-	onCMsgSosStartSoundEvent                  []func(*deadlock.CMsgSosStartSoundEvent) error
-	onCMsgSosStopSoundEvent                   []func(*deadlock.CMsgSosStopSoundEvent) error
-	onCMsgSosSetSoundEventParams              []func(*deadlock.CMsgSosSetSoundEventParams) error
-	onCMsgSosSetLibraryStackFields            []func(*deadlock.CMsgSosSetLibraryStackFields) error
-	onCMsgSosStopSoundEventHash               []func(*deadlock.CMsgSosStopSoundEventHash) error
-
-	pb *proto.Buffer
+	onCDemoStop                                        []func(*deadlock.CDemoStop) error
+	onCDemoFileHeader                                  []func(*deadlock.CDemoFileHeader) error
+	onCDemoFileInfo                                    []func(*deadlock.CDemoFileInfo) error
+	onCDemoSyncTick                                    []func(*deadlock.CDemoSyncTick) error
+	onCDemoSendTables                                  []func(*deadlock.CDemoSendTables) error
+	onCDemoClassInfo                                   []func(*deadlock.CDemoClassInfo) error
+	onCDemoStringTables                                []func(*deadlock.CDemoStringTables) error
+	onCDemoPacket                                      []func(*deadlock.CDemoPacket) error
+	onCDemoSignonPacket                                []func(*deadlock.CDemoPacket) error
+	onCDemoConsoleCmd                                  []func(*deadlock.CDemoConsoleCmd) error
+	onCDemoCustomData                                  []func(*deadlock.CDemoCustomData) error
+	onCDemoCustomDataCallbacks                         []func(*deadlock.CDemoCustomDataCallbacks) error
+	onCDemoUserCmd                                     []func(*deadlock.CDemoUserCmd) error
+	onCDemoFullPacket                                  []func(*deadlock.CDemoFullPacket) error
+	onCDemoSaveGame                                    []func(*deadlock.CDemoSaveGame) error
+	onCDemoSpawnGroups                                 []func(*deadlock.CDemoSpawnGroups) error
+	onCDemoAnimationData                               []func(*deadlock.CDemoAnimationData) error
+	onCDemoAnimationHeader                             []func(*deadlock.CDemoAnimationHeader) error
+	onCNETMsg_NOP                                      []func(*deadlock.CNETMsg_NOP) error
+	onCNETMsg_SplitScreenUser                          []func(*deadlock.CNETMsg_SplitScreenUser) error
+	onCNETMsg_Tick                                     []func(*deadlock.CNETMsg_Tick) error
+	onCNETMsg_StringCmd                                []func(*deadlock.CNETMsg_StringCmd) error
+	onCNETMsg_SetConVar                                []func(*deadlock.CNETMsg_SetConVar) error
+	onCNETMsg_SignonState                              []func(*deadlock.CNETMsg_SignonState) error
+	onCNETMsg_SpawnGroup_Load                          []func(*deadlock.CNETMsg_SpawnGroup_Load) error
+	onCNETMsg_SpawnGroup_ManifestUpdate                []func(*deadlock.CNETMsg_SpawnGroup_ManifestUpdate) error
+	onCNETMsg_SpawnGroup_SetCreationTick               []func(*deadlock.CNETMsg_SpawnGroup_SetCreationTick) error
+	onCNETMsg_SpawnGroup_Unload                        []func(*deadlock.CNETMsg_SpawnGroup_Unload) error
+	onCNETMsg_SpawnGroup_LoadCompleted                 []func(*deadlock.CNETMsg_SpawnGroup_LoadCompleted) error
+	onCNETMsg_DebugOverlay                             []func(*deadlock.CNETMsg_DebugOverlay) error
+	onCSVCMsg_ServerInfo                               []func(*deadlock.CSVCMsg_ServerInfo) error
+	onCSVCMsg_FlattenedSerializer                      []func(*deadlock.CSVCMsg_FlattenedSerializer) error
+	onCSVCMsg_ClassInfo                                []func(*deadlock.CSVCMsg_ClassInfo) error
+	onCSVCMsg_SetPause                                 []func(*deadlock.CSVCMsg_SetPause) error
+	onCSVCMsg_CreateStringTable                        []func(*deadlock.CSVCMsg_CreateStringTable) error
+	onCSVCMsg_UpdateStringTable                        []func(*deadlock.CSVCMsg_UpdateStringTable) error
+	onCSVCMsg_VoiceInit                                []func(*deadlock.CSVCMsg_VoiceInit) error
+	onCSVCMsg_VoiceData                                []func(*deadlock.CSVCMsg_VoiceData) error
+	onCSVCMsg_Print                                    []func(*deadlock.CSVCMsg_Print) error
+	onCSVCMsg_Sounds                                   []func(*deadlock.CSVCMsg_Sounds) error
+	onCSVCMsg_SetView                                  []func(*deadlock.CSVCMsg_SetView) error
+	onCSVCMsg_ClearAllStringTables                     []func(*deadlock.CSVCMsg_ClearAllStringTables) error
+	onCSVCMsg_CmdKeyValues                             []func(*deadlock.CSVCMsg_CmdKeyValues) error
+	onCSVCMsg_BSPDecal                                 []func(*deadlock.CSVCMsg_BSPDecal) error
+	onCSVCMsg_SplitScreen                              []func(*deadlock.CSVCMsg_SplitScreen) error
+	onCSVCMsg_PacketEntities                           []func(*deadlock.CSVCMsg_PacketEntities) error
+	onCSVCMsg_Prefetch                                 []func(*deadlock.CSVCMsg_Prefetch) error
+	onCSVCMsg_Menu                                     []func(*deadlock.CSVCMsg_Menu) error
+	onCSVCMsg_GetCvarValue                             []func(*deadlock.CSVCMsg_GetCvarValue) error
+	onCSVCMsg_StopSound                                []func(*deadlock.CSVCMsg_StopSound) error
+	onCSVCMsg_PeerList                                 []func(*deadlock.CSVCMsg_PeerList) error
+	onCSVCMsg_PacketReliable                           []func(*deadlock.CSVCMsg_PacketReliable) error
+	onCSVCMsg_HLTVStatus                               []func(*deadlock.CSVCMsg_HLTVStatus) error
+	onCSVCMsg_ServerSteamID                            []func(*deadlock.CSVCMsg_ServerSteamID) error
+	onCSVCMsg_FullFrameSplit                           []func(*deadlock.CSVCMsg_FullFrameSplit) error
+	onCSVCMsg_RconServerDetails                        []func(*deadlock.CSVCMsg_RconServerDetails) error
+	onCSVCMsg_UserMessage                              []func(*deadlock.CSVCMsg_UserMessage) error
+	onCSVCMsg_Broadcast_Command                        []func(*deadlock.CSVCMsg_Broadcast_Command) error
+	onCSVCMsg_HltvFixupOperatorStatus                  []func(*deadlock.CSVCMsg_HltvFixupOperatorStatus) error
+	onCUserMessageAchievementEvent                     []func(*deadlock.CUserMessageAchievementEvent) error
+	onCUserMessageCloseCaption                         []func(*deadlock.CUserMessageCloseCaption) error
+	onCUserMessageCloseCaptionDirect                   []func(*deadlock.CUserMessageCloseCaptionDirect) error
+	onCUserMessageCurrentTimescale                     []func(*deadlock.CUserMessageCurrentTimescale) error
+	onCUserMessageDesiredTimescale                     []func(*deadlock.CUserMessageDesiredTimescale) error
+	onCUserMessageFade                                 []func(*deadlock.CUserMessageFade) error
+	onCUserMessageGameTitle                            []func(*deadlock.CUserMessageGameTitle) error
+	onCUserMessageHudMsg                               []func(*deadlock.CUserMessageHudMsg) error
+	onCUserMessageHudText                              []func(*deadlock.CUserMessageHudText) error
+	onCUserMessageColoredText                          []func(*deadlock.CUserMessageColoredText) error
+	onCUserMessageRequestState                         []func(*deadlock.CUserMessageRequestState) error
+	onCUserMessageResetHUD                             []func(*deadlock.CUserMessageResetHUD) error
+	onCUserMessageRumble                               []func(*deadlock.CUserMessageRumble) error
+	onCUserMessageSayText                              []func(*deadlock.CUserMessageSayText) error
+	onCUserMessageSayText2                             []func(*deadlock.CUserMessageSayText2) error
+	onCUserMessageSayTextChannel                       []func(*deadlock.CUserMessageSayTextChannel) error
+	onCUserMessageShake                                []func(*deadlock.CUserMessageShake) error
+	onCUserMessageShakeDir                             []func(*deadlock.CUserMessageShakeDir) error
+	onCUserMessageWaterShake                           []func(*deadlock.CUserMessageWaterShake) error
+	onCUserMessageTextMsg                              []func(*deadlock.CUserMessageTextMsg) error
+	onCUserMessageScreenTilt                           []func(*deadlock.CUserMessageScreenTilt) error
+	onCUserMessageVoiceMask                            []func(*deadlock.CUserMessageVoiceMask) error
+	onCUserMessageSendAudio                            []func(*deadlock.CUserMessageSendAudio) error
+	onCUserMessageItemPickup                           []func(*deadlock.CUserMessageItemPickup) error
+	onCUserMessageAmmoDenied                           []func(*deadlock.CUserMessageAmmoDenied) error
+	onCUserMessageShowMenu                             []func(*deadlock.CUserMessageShowMenu) error
+	onCUserMessageCreditsMsg                           []func(*deadlock.CUserMessageCreditsMsg) error
+	onCEntityMessagePlayJingle                         []func(*deadlock.CEntityMessagePlayJingle) error
+	onCEntityMessageScreenOverlay                      []func(*deadlock.CEntityMessageScreenOverlay) error
+	onCEntityMessageRemoveAllDecals                    []func(*deadlock.CEntityMessageRemoveAllDecals) error
+	onCEntityMessagePropagateForce                     []func(*deadlock.CEntityMessagePropagateForce) error
+	onCEntityMessageDoSpark                            []func(*deadlock.CEntityMessageDoSpark) error
+	onCEntityMessageFixAngle                           []func(*deadlock.CEntityMessageFixAngle) error
+	onCUserMessageCloseCaptionPlaceholder              []func(*deadlock.CUserMessageCloseCaptionPlaceholder) error
+	onCUserMessageCameraTransition                     []func(*deadlock.CUserMessageCameraTransition) error
+	onCUserMessageAudioParameter                       []func(*deadlock.CUserMessageAudioParameter) error
+	onCUserMessageHapticsManagerPulse                  []func(*deadlock.CUserMessageHapticsManagerPulse) error
+	onCUserMessageHapticsManagerEffect                 []func(*deadlock.CUserMessageHapticsManagerEffect) error
+	onCUserMessageUpdateCssClasses                     []func(*deadlock.CUserMessageUpdateCssClasses) error
+	onCUserMessageServerFrameTime                      []func(*deadlock.CUserMessageServerFrameTime) error
+	onCUserMessageLagCompensationError                 []func(*deadlock.CUserMessageLagCompensationError) error
+	onCUserMessageRequestDllStatus                     []func(*deadlock.CUserMessageRequestDllStatus) error
+	onCUserMessageRequestUtilAction                    []func(*deadlock.CUserMessageRequestUtilAction) error
+	onCUserMessageRequestInventory                     []func(*deadlock.CUserMessageRequestInventory) error
+	onCUserMessageRequestDiagnostic                    []func(*deadlock.CUserMessageRequestDiagnostic) error
+	onCMsgVDebugGameSessionIDEvent                     []func(*deadlock.CMsgVDebugGameSessionIDEvent) error
+	onCMsgPlaceDecalEvent                              []func(*deadlock.CMsgPlaceDecalEvent) error
+	onCMsgClearWorldDecalsEvent                        []func(*deadlock.CMsgClearWorldDecalsEvent) error
+	onCMsgClearEntityDecalsEvent                       []func(*deadlock.CMsgClearEntityDecalsEvent) error
+	onCMsgClearDecalsForSkeletonInstanceEvent          []func(*deadlock.CMsgClearDecalsForSkeletonInstanceEvent) error
+	onCMsgSource1LegacyGameEventList                   []func(*deadlock.CMsgSource1LegacyGameEventList) error
+	onCMsgSource1LegacyListenEvents                    []func(*deadlock.CMsgSource1LegacyListenEvents) error
+	onCMsgSource1LegacyGameEvent                       []func(*deadlock.CMsgSource1LegacyGameEvent) error
+	onCMsgSosStartSoundEvent                           []func(*deadlock.CMsgSosStartSoundEvent) error
+	onCMsgSosStopSoundEvent                            []func(*deadlock.CMsgSosStopSoundEvent) error
+	onCMsgSosSetSoundEventParams                       []func(*deadlock.CMsgSosSetSoundEventParams) error
+	onCMsgSosSetLibraryStackFields                     []func(*deadlock.CMsgSosSetLibraryStackFields) error
+	onCMsgSosStopSoundEventHash                        []func(*deadlock.CMsgSosStopSoundEventHash) error
+	onCCitadelUserMessage_Damage                       []func(*deadlock.CCitadelUserMessage_Damage) error
+	onCCitadelUserMsg_MapPing                          []func(*deadlock.CCitadelUserMsg_MapPing) error
+	onCCitadelUserMsg_TeamRewards                      []func(*deadlock.CCitadelUserMsg_TeamRewards) error
+	onCCitadelUserMsg_TriggerDamageFlash               []func(*deadlock.CCitadelUserMsg_TriggerDamageFlash) error
+	onCCitadelUserMsg_AbilitiesChanged                 []func(*deadlock.CCitadelUserMsg_AbilitiesChanged) error
+	onCCitadelUserMsg_RecentDamageSummary              []func(*deadlock.CCitadelUserMsg_RecentDamageSummary) error
+	onCCitadelUserMsg_SpectatorTeamChanged             []func(*deadlock.CCitadelUserMsg_SpectatorTeamChanged) error
+	onCCitadelUserMsg_ChatWheel                        []func(*deadlock.CCitadelUserMsg_ChatWheel) error
+	onCCitadelUserMsg_GoldHistory                      []func(*deadlock.CCitadelUserMsg_GoldHistory) error
+	onCCitadelUserMsg_ChatMsg                          []func(*deadlock.CCitadelUserMsg_ChatMsg) error
+	onCCitadelUserMsg_QuickResponse                    []func(*deadlock.CCitadelUserMsg_QuickResponse) error
+	onCCitadelUserMsg_PostMatchDetails                 []func(*deadlock.CCitadelUserMsg_PostMatchDetails) error
+	onCCitadelUserMsg_ChatEvent                        []func(*deadlock.CCitadelUserMsg_ChatEvent) error
+	onCCitadelUserMsg_AbilityInterrupted               []func(*deadlock.CCitadelUserMsg_AbilityInterrupted) error
+	onCCitadelUserMsg_HeroKilled                       []func(*deadlock.CCitadelUserMsg_HeroKilled) error
+	onCCitadelUserMsg_ReturnIdol                       []func(*deadlock.CCitadelUserMsg_ReturnIdol) error
+	onCCitadelUserMsg_SetClientCameraAngles            []func(*deadlock.CCitadelUserMsg_SetClientCameraAngles) error
+	onCCitadelUserMsg_MapLine                          []func(*deadlock.CCitadelUserMsg_MapLine) error
+	onCCitadelUserMessage_BulletHit                    []func(*deadlock.CCitadelUserMessage_BulletHit) error
+	onCCitadelUserMessage_ObjectiveMask                []func(*deadlock.CCitadelUserMessage_ObjectiveMask) error
+	onCCitadelUserMessage_ModifierApplied              []func(*deadlock.CCitadelUserMessage_ModifierApplied) error
+	onCCitadelUserMsg_CameraController                 []func(*deadlock.CCitadelUserMsg_CameraController) error
+	onCCitadelUserMessage_AuraModifierApplied          []func(*deadlock.CCitadelUserMessage_AuraModifierApplied) error
+	onCCitadelUserMsg_ObstructedShotFired              []func(*deadlock.CCitadelUserMsg_ObstructedShotFired) error
+	onCCitadelUserMsg_AbilityLateFailure               []func(*deadlock.CCitadelUserMsg_AbilityLateFailure) error
+	onCCitadelUserMsg_AbilityPing                      []func(*deadlock.CCitadelUserMsg_AbilityPing) error
+	onCCitadelUserMsg_PostProcessingAnim               []func(*deadlock.CCitadelUserMsg_PostProcessingAnim) error
+	onCCitadelUserMsg_DeathReplayData                  []func(*deadlock.CCitadelUserMsg_DeathReplayData) error
+	onCCitadelUserMsg_PlayerLifetimeStatInfo           []func(*deadlock.CCitadelUserMsg_PlayerLifetimeStatInfo) error
+	onCCitadelUserMsg_ForceShopClosed                  []func(*deadlock.CCitadelUserMsg_ForceShopClosed) error
+	onCCitadelUserMsg_StaminaDrained                   []func(*deadlock.CCitadelUserMsg_StaminaDrained) error
+	onCCitadelUserMessage_AbilityNotify                []func(*deadlock.CCitadelUserMessage_AbilityNotify) error
+	onCCitadelUserMsg_GetDamageStatsResponse           []func(*deadlock.CCitadelUserMsg_GetDamageStatsResponse) error
+	onCCitadelUserMsg_ParticipantSetSoundEventParams   []func(*deadlock.CCitadelUserMsg_ParticipantSetSoundEventParams) error
+	onCCitadelUserMsg_ParticipantSetLibraryStackFields []func(*deadlock.CCitadelUserMsg_ParticipantSetLibraryStackFields) error
+	onCCitadelUserMessage_CurrencyChanged              []func(*deadlock.CCitadelUserMessage_CurrencyChanged) error
+	onCCitadelUserMessage_GameOver                     []func(*deadlock.CCitadelUserMessage_GameOver) error
+	onCCitadelUserMsg_BossKilled                       []func(*deadlock.CCitadelUserMsg_BossKilled) error
 }
 
 func newCallbacks() *Callbacks {
-	return &Callbacks{
-		pb: &proto.Buffer{},
-	}
+	return &Callbacks{}
 }
 
 // OnCDemoStop registers a callback EDemoCommands_DEM_Stop
@@ -720,6 +755,196 @@ func (c *Callbacks) OnCMsgSosStopSoundEventHash(fn func(*deadlock.CMsgSosStopSou
 	c.onCMsgSosStopSoundEventHash = append(c.onCMsgSosStopSoundEventHash, fn)
 }
 
+// OnCCitadelUserMessage_Damage registers a callback for CitadelUserMessageIds_k_EUserMsg_Damage
+func (c *Callbacks) OnCCitadelUserMessage_Damage(fn func(*deadlock.CCitadelUserMessage_Damage) error) {
+	c.onCCitadelUserMessage_Damage = append(c.onCCitadelUserMessage_Damage, fn)
+}
+
+// OnCCitadelUserMsg_MapPing registers a callback for CitadelUserMessageIds_k_EUserMsg_MapPing
+func (c *Callbacks) OnCCitadelUserMsg_MapPing(fn func(*deadlock.CCitadelUserMsg_MapPing) error) {
+	c.onCCitadelUserMsg_MapPing = append(c.onCCitadelUserMsg_MapPing, fn)
+}
+
+// OnCCitadelUserMsg_TeamRewards registers a callback for CitadelUserMessageIds_k_EUserMsg_TeamRewards
+func (c *Callbacks) OnCCitadelUserMsg_TeamRewards(fn func(*deadlock.CCitadelUserMsg_TeamRewards) error) {
+	c.onCCitadelUserMsg_TeamRewards = append(c.onCCitadelUserMsg_TeamRewards, fn)
+}
+
+// OnCCitadelUserMsg_TriggerDamageFlash registers a callback for CitadelUserMessageIds_k_EUserMsg_TriggerDamageFlash
+func (c *Callbacks) OnCCitadelUserMsg_TriggerDamageFlash(fn func(*deadlock.CCitadelUserMsg_TriggerDamageFlash) error) {
+	c.onCCitadelUserMsg_TriggerDamageFlash = append(c.onCCitadelUserMsg_TriggerDamageFlash, fn)
+}
+
+// OnCCitadelUserMsg_AbilitiesChanged registers a callback for CitadelUserMessageIds_k_EUserMsg_AbilitiesChanged
+func (c *Callbacks) OnCCitadelUserMsg_AbilitiesChanged(fn func(*deadlock.CCitadelUserMsg_AbilitiesChanged) error) {
+	c.onCCitadelUserMsg_AbilitiesChanged = append(c.onCCitadelUserMsg_AbilitiesChanged, fn)
+}
+
+// OnCCitadelUserMsg_RecentDamageSummary registers a callback for CitadelUserMessageIds_k_EUserMsg_RecentDamageSummary
+func (c *Callbacks) OnCCitadelUserMsg_RecentDamageSummary(fn func(*deadlock.CCitadelUserMsg_RecentDamageSummary) error) {
+	c.onCCitadelUserMsg_RecentDamageSummary = append(c.onCCitadelUserMsg_RecentDamageSummary, fn)
+}
+
+// OnCCitadelUserMsg_SpectatorTeamChanged registers a callback for CitadelUserMessageIds_k_EUserMsg_SpectatorTeamChanged
+func (c *Callbacks) OnCCitadelUserMsg_SpectatorTeamChanged(fn func(*deadlock.CCitadelUserMsg_SpectatorTeamChanged) error) {
+	c.onCCitadelUserMsg_SpectatorTeamChanged = append(c.onCCitadelUserMsg_SpectatorTeamChanged, fn)
+}
+
+// OnCCitadelUserMsg_ChatWheel registers a callback for CitadelUserMessageIds_k_EUserMsg_ChatWheel
+func (c *Callbacks) OnCCitadelUserMsg_ChatWheel(fn func(*deadlock.CCitadelUserMsg_ChatWheel) error) {
+	c.onCCitadelUserMsg_ChatWheel = append(c.onCCitadelUserMsg_ChatWheel, fn)
+}
+
+// OnCCitadelUserMsg_GoldHistory registers a callback for CitadelUserMessageIds_k_EUserMsg_GoldHistory
+func (c *Callbacks) OnCCitadelUserMsg_GoldHistory(fn func(*deadlock.CCitadelUserMsg_GoldHistory) error) {
+	c.onCCitadelUserMsg_GoldHistory = append(c.onCCitadelUserMsg_GoldHistory, fn)
+}
+
+// OnCCitadelUserMsg_ChatMsg registers a callback for CitadelUserMessageIds_k_EUserMsg_ChatMsg
+func (c *Callbacks) OnCCitadelUserMsg_ChatMsg(fn func(*deadlock.CCitadelUserMsg_ChatMsg) error) {
+	c.onCCitadelUserMsg_ChatMsg = append(c.onCCitadelUserMsg_ChatMsg, fn)
+}
+
+// OnCCitadelUserMsg_QuickResponse registers a callback for CitadelUserMessageIds_k_EUserMsg_QuickResponse
+func (c *Callbacks) OnCCitadelUserMsg_QuickResponse(fn func(*deadlock.CCitadelUserMsg_QuickResponse) error) {
+	c.onCCitadelUserMsg_QuickResponse = append(c.onCCitadelUserMsg_QuickResponse, fn)
+}
+
+// OnCCitadelUserMsg_PostMatchDetails registers a callback for CitadelUserMessageIds_k_EUserMsg_PostMatchDetails
+func (c *Callbacks) OnCCitadelUserMsg_PostMatchDetails(fn func(*deadlock.CCitadelUserMsg_PostMatchDetails) error) {
+	c.onCCitadelUserMsg_PostMatchDetails = append(c.onCCitadelUserMsg_PostMatchDetails, fn)
+}
+
+// OnCCitadelUserMsg_ChatEvent registers a callback for CitadelUserMessageIds_k_EUserMsg_ChatEvent
+func (c *Callbacks) OnCCitadelUserMsg_ChatEvent(fn func(*deadlock.CCitadelUserMsg_ChatEvent) error) {
+	c.onCCitadelUserMsg_ChatEvent = append(c.onCCitadelUserMsg_ChatEvent, fn)
+}
+
+// OnCCitadelUserMsg_AbilityInterrupted registers a callback for CitadelUserMessageIds_k_EUserMsg_AbilityInterrupted
+func (c *Callbacks) OnCCitadelUserMsg_AbilityInterrupted(fn func(*deadlock.CCitadelUserMsg_AbilityInterrupted) error) {
+	c.onCCitadelUserMsg_AbilityInterrupted = append(c.onCCitadelUserMsg_AbilityInterrupted, fn)
+}
+
+// OnCCitadelUserMsg_HeroKilled registers a callback for CitadelUserMessageIds_k_EUserMsg_HeroKilled
+func (c *Callbacks) OnCCitadelUserMsg_HeroKilled(fn func(*deadlock.CCitadelUserMsg_HeroKilled) error) {
+	c.onCCitadelUserMsg_HeroKilled = append(c.onCCitadelUserMsg_HeroKilled, fn)
+}
+
+// OnCCitadelUserMsg_ReturnIdol registers a callback for CitadelUserMessageIds_k_EUserMsg_ReturnIdol
+func (c *Callbacks) OnCCitadelUserMsg_ReturnIdol(fn func(*deadlock.CCitadelUserMsg_ReturnIdol) error) {
+	c.onCCitadelUserMsg_ReturnIdol = append(c.onCCitadelUserMsg_ReturnIdol, fn)
+}
+
+// OnCCitadelUserMsg_SetClientCameraAngles registers a callback for CitadelUserMessageIds_k_EUserMsg_SetClientCameraAngles
+func (c *Callbacks) OnCCitadelUserMsg_SetClientCameraAngles(fn func(*deadlock.CCitadelUserMsg_SetClientCameraAngles) error) {
+	c.onCCitadelUserMsg_SetClientCameraAngles = append(c.onCCitadelUserMsg_SetClientCameraAngles, fn)
+}
+
+// OnCCitadelUserMsg_MapLine registers a callback for CitadelUserMessageIds_k_EUserMsg_MapLine
+func (c *Callbacks) OnCCitadelUserMsg_MapLine(fn func(*deadlock.CCitadelUserMsg_MapLine) error) {
+	c.onCCitadelUserMsg_MapLine = append(c.onCCitadelUserMsg_MapLine, fn)
+}
+
+// OnCCitadelUserMessage_BulletHit registers a callback for CitadelUserMessageIds_k_EUserMsg_BulletHit
+func (c *Callbacks) OnCCitadelUserMessage_BulletHit(fn func(*deadlock.CCitadelUserMessage_BulletHit) error) {
+	c.onCCitadelUserMessage_BulletHit = append(c.onCCitadelUserMessage_BulletHit, fn)
+}
+
+// OnCCitadelUserMessage_ObjectiveMask registers a callback for CitadelUserMessageIds_k_EUserMsg_ObjectiveMask
+func (c *Callbacks) OnCCitadelUserMessage_ObjectiveMask(fn func(*deadlock.CCitadelUserMessage_ObjectiveMask) error) {
+	c.onCCitadelUserMessage_ObjectiveMask = append(c.onCCitadelUserMessage_ObjectiveMask, fn)
+}
+
+// OnCCitadelUserMessage_ModifierApplied registers a callback for CitadelUserMessageIds_k_EUserMsg_ModifierApplied
+func (c *Callbacks) OnCCitadelUserMessage_ModifierApplied(fn func(*deadlock.CCitadelUserMessage_ModifierApplied) error) {
+	c.onCCitadelUserMessage_ModifierApplied = append(c.onCCitadelUserMessage_ModifierApplied, fn)
+}
+
+// OnCCitadelUserMsg_CameraController registers a callback for CitadelUserMessageIds_k_EUserMsg_CameraController
+func (c *Callbacks) OnCCitadelUserMsg_CameraController(fn func(*deadlock.CCitadelUserMsg_CameraController) error) {
+	c.onCCitadelUserMsg_CameraController = append(c.onCCitadelUserMsg_CameraController, fn)
+}
+
+// OnCCitadelUserMessage_AuraModifierApplied registers a callback for CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied
+func (c *Callbacks) OnCCitadelUserMessage_AuraModifierApplied(fn func(*deadlock.CCitadelUserMessage_AuraModifierApplied) error) {
+	c.onCCitadelUserMessage_AuraModifierApplied = append(c.onCCitadelUserMessage_AuraModifierApplied, fn)
+}
+
+// OnCCitadelUserMsg_ObstructedShotFired registers a callback for CitadelUserMessageIds_k_EUserMsg_ObstructedShotFired
+func (c *Callbacks) OnCCitadelUserMsg_ObstructedShotFired(fn func(*deadlock.CCitadelUserMsg_ObstructedShotFired) error) {
+	c.onCCitadelUserMsg_ObstructedShotFired = append(c.onCCitadelUserMsg_ObstructedShotFired, fn)
+}
+
+// OnCCitadelUserMsg_AbilityLateFailure registers a callback for CitadelUserMessageIds_k_EUserMsg_AbilityLateFailure
+func (c *Callbacks) OnCCitadelUserMsg_AbilityLateFailure(fn func(*deadlock.CCitadelUserMsg_AbilityLateFailure) error) {
+	c.onCCitadelUserMsg_AbilityLateFailure = append(c.onCCitadelUserMsg_AbilityLateFailure, fn)
+}
+
+// OnCCitadelUserMsg_AbilityPing registers a callback for CitadelUserMessageIds_k_EUserMsg_AbilityPing
+func (c *Callbacks) OnCCitadelUserMsg_AbilityPing(fn func(*deadlock.CCitadelUserMsg_AbilityPing) error) {
+	c.onCCitadelUserMsg_AbilityPing = append(c.onCCitadelUserMsg_AbilityPing, fn)
+}
+
+// OnCCitadelUserMsg_PostProcessingAnim registers a callback for CitadelUserMessageIds_k_EUserMsg_PostProcessingAnim
+func (c *Callbacks) OnCCitadelUserMsg_PostProcessingAnim(fn func(*deadlock.CCitadelUserMsg_PostProcessingAnim) error) {
+	c.onCCitadelUserMsg_PostProcessingAnim = append(c.onCCitadelUserMsg_PostProcessingAnim, fn)
+}
+
+// OnCCitadelUserMsg_DeathReplayData registers a callback for CitadelUserMessageIds_k_EUserMsg_DeathReplayData
+func (c *Callbacks) OnCCitadelUserMsg_DeathReplayData(fn func(*deadlock.CCitadelUserMsg_DeathReplayData) error) {
+	c.onCCitadelUserMsg_DeathReplayData = append(c.onCCitadelUserMsg_DeathReplayData, fn)
+}
+
+// OnCCitadelUserMsg_PlayerLifetimeStatInfo registers a callback for CitadelUserMessageIds_k_EUserMsg_PlayerLifetimeStatInfo
+func (c *Callbacks) OnCCitadelUserMsg_PlayerLifetimeStatInfo(fn func(*deadlock.CCitadelUserMsg_PlayerLifetimeStatInfo) error) {
+	c.onCCitadelUserMsg_PlayerLifetimeStatInfo = append(c.onCCitadelUserMsg_PlayerLifetimeStatInfo, fn)
+}
+
+// OnCCitadelUserMsg_ForceShopClosed registers a callback for CitadelUserMessageIds_k_EUserMsg_ForceShopClosed
+func (c *Callbacks) OnCCitadelUserMsg_ForceShopClosed(fn func(*deadlock.CCitadelUserMsg_ForceShopClosed) error) {
+	c.onCCitadelUserMsg_ForceShopClosed = append(c.onCCitadelUserMsg_ForceShopClosed, fn)
+}
+
+// OnCCitadelUserMsg_StaminaDrained registers a callback for CitadelUserMessageIds_k_EUserMsg_StaminaDrained
+func (c *Callbacks) OnCCitadelUserMsg_StaminaDrained(fn func(*deadlock.CCitadelUserMsg_StaminaDrained) error) {
+	c.onCCitadelUserMsg_StaminaDrained = append(c.onCCitadelUserMsg_StaminaDrained, fn)
+}
+
+// OnCCitadelUserMessage_AbilityNotify registers a callback for CitadelUserMessageIds_k_EUserMsg_AbilityNotify
+func (c *Callbacks) OnCCitadelUserMessage_AbilityNotify(fn func(*deadlock.CCitadelUserMessage_AbilityNotify) error) {
+	c.onCCitadelUserMessage_AbilityNotify = append(c.onCCitadelUserMessage_AbilityNotify, fn)
+}
+
+// OnCCitadelUserMsg_GetDamageStatsResponse registers a callback for CitadelUserMessageIds_k_EUserMsg_GetDamageStatsResponse
+func (c *Callbacks) OnCCitadelUserMsg_GetDamageStatsResponse(fn func(*deadlock.CCitadelUserMsg_GetDamageStatsResponse) error) {
+	c.onCCitadelUserMsg_GetDamageStatsResponse = append(c.onCCitadelUserMsg_GetDamageStatsResponse, fn)
+}
+
+// OnCCitadelUserMsg_ParticipantSetSoundEventParams registers a callback for CitadelUserMessageIds_k_EUserMsg_ParticipantSetSoundEventParams
+func (c *Callbacks) OnCCitadelUserMsg_ParticipantSetSoundEventParams(fn func(*deadlock.CCitadelUserMsg_ParticipantSetSoundEventParams) error) {
+	c.onCCitadelUserMsg_ParticipantSetSoundEventParams = append(c.onCCitadelUserMsg_ParticipantSetSoundEventParams, fn)
+}
+
+// OnCCitadelUserMsg_ParticipantSetLibraryStackFields registers a callback for CitadelUserMessageIds_k_EUserMsg_ParticipantSetLibraryStackFields
+func (c *Callbacks) OnCCitadelUserMsg_ParticipantSetLibraryStackFields(fn func(*deadlock.CCitadelUserMsg_ParticipantSetLibraryStackFields) error) {
+	c.onCCitadelUserMsg_ParticipantSetLibraryStackFields = append(c.onCCitadelUserMsg_ParticipantSetLibraryStackFields, fn)
+}
+
+// OnCCitadelUserMessage_CurrencyChanged registers a callback for CitadelUserMessageIds_k_EUserMsg_CurrencyChanged
+func (c *Callbacks) OnCCitadelUserMessage_CurrencyChanged(fn func(*deadlock.CCitadelUserMessage_CurrencyChanged) error) {
+	c.onCCitadelUserMessage_CurrencyChanged = append(c.onCCitadelUserMessage_CurrencyChanged, fn)
+}
+
+// OnCCitadelUserMessage_GameOver registers a callback for CitadelUserMessageIds_k_EUserMsg_GameOver
+func (c *Callbacks) OnCCitadelUserMessage_GameOver(fn func(*deadlock.CCitadelUserMessage_GameOver) error) {
+	c.onCCitadelUserMessage_GameOver = append(c.onCCitadelUserMessage_GameOver, fn)
+}
+
+// OnCCitadelUserMsg_BossKilled registers a callback for CitadelUserMessageIds_k_EUserMsg_BossKilled
+func (c *Callbacks) OnCCitadelUserMsg_BossKilled(fn func(*deadlock.CCitadelUserMsg_BossKilled) error) {
+	c.onCCitadelUserMsg_BossKilled = append(c.onCCitadelUserMsg_BossKilled, fn)
+}
+
 func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 	switch t {
 	case 0: // deadlock.EDemoCommands_DEM_Stop
@@ -728,8 +953,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoStop{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -747,8 +971,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoFileHeader{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -766,8 +989,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoFileInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -785,8 +1007,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoSyncTick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -804,8 +1025,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoSendTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -823,8 +1043,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoClassInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -842,8 +1061,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoStringTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -861,8 +1079,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -880,8 +1097,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -899,8 +1115,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoConsoleCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -918,8 +1133,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoCustomData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -937,8 +1151,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoCustomDataCallbacks{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -956,8 +1169,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoUserCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -975,8 +1187,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoFullPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -994,8 +1205,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoSaveGame{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -1013,8 +1223,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoSpawnGroups{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -1032,8 +1241,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoAnimationData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -1051,8 +1259,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CDemoAnimationHeader{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -1122,130 +1329,112 @@ func (c *Callbacks) toDemoString(t int32, buf []byte) string {
 	switch t {
 	case 0: //deadlock.EDemoCommands_DEM_Stop
 		msg := &deadlock.CDemoStop{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 1: //deadlock.EDemoCommands_DEM_FileHeader
 		msg := &deadlock.CDemoFileHeader{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 2: //deadlock.EDemoCommands_DEM_FileInfo
 		msg := &deadlock.CDemoFileInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 3: //deadlock.EDemoCommands_DEM_SyncTick
 		msg := &deadlock.CDemoSyncTick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 4: //deadlock.EDemoCommands_DEM_SendTables
 		msg := &deadlock.CDemoSendTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 5: //deadlock.EDemoCommands_DEM_ClassInfo
 		msg := &deadlock.CDemoClassInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 6: //deadlock.EDemoCommands_DEM_StringTables
 		msg := &deadlock.CDemoStringTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 7: //deadlock.EDemoCommands_DEM_Packet
 		msg := &deadlock.CDemoPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 8: //deadlock.EDemoCommands_DEM_SignonPacket
 		msg := &deadlock.CDemoPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 9: //deadlock.EDemoCommands_DEM_ConsoleCmd
 		msg := &deadlock.CDemoConsoleCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 10: //deadlock.EDemoCommands_DEM_CustomData
 		msg := &deadlock.CDemoCustomData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 11: //deadlock.EDemoCommands_DEM_CustomDataCallbacks
 		msg := &deadlock.CDemoCustomDataCallbacks{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 12: //deadlock.EDemoCommands_DEM_UserCmd
 		msg := &deadlock.CDemoUserCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 13: //deadlock.EDemoCommands_DEM_FullPacket
 		msg := &deadlock.CDemoFullPacket{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 14: //deadlock.EDemoCommands_DEM_SaveGame
 		msg := &deadlock.CDemoSaveGame{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 15: //deadlock.EDemoCommands_DEM_SpawnGroups
 		msg := &deadlock.CDemoSpawnGroups{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 16: //deadlock.EDemoCommands_DEM_AnimationData
 		msg := &deadlock.CDemoAnimationData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 17: //deadlock.EDemoCommands_DEM_AnimationHeader
 		msg := &deadlock.CDemoAnimationHeader{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 
 	}
 	return "UNKNOWN:" + strconv.Itoa(int(t))
@@ -1452,6 +1641,82 @@ func (c *Callbacks) getPacketTypeName(t int32) string {
 		return "EBaseGameEvents_GE_SosSetLibraryStackFields"
 	case 212: //deadlock.EBaseGameEvents_GE_SosStopSoundEventHash
 		return "EBaseGameEvents_GE_SosStopSoundEventHash"
+	case 300: //deadlock.CitadelUserMessageIds_k_EUserMsg_Damage
+		return "CitadelUserMessageIds_k_EUserMsg_Damage"
+	case 303: //deadlock.CitadelUserMessageIds_k_EUserMsg_MapPing
+		return "CitadelUserMessageIds_k_EUserMsg_MapPing"
+	case 304: //deadlock.CitadelUserMessageIds_k_EUserMsg_TeamRewards
+		return "CitadelUserMessageIds_k_EUserMsg_TeamRewards"
+	case 308: //deadlock.CitadelUserMessageIds_k_EUserMsg_TriggerDamageFlash
+		return "CitadelUserMessageIds_k_EUserMsg_TriggerDamageFlash"
+	case 309: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilitiesChanged
+		return "CitadelUserMessageIds_k_EUserMsg_AbilitiesChanged"
+	case 310: //deadlock.CitadelUserMessageIds_k_EUserMsg_RecentDamageSummary
+		return "CitadelUserMessageIds_k_EUserMsg_RecentDamageSummary"
+	case 311: //deadlock.CitadelUserMessageIds_k_EUserMsg_SpectatorTeamChanged
+		return "CitadelUserMessageIds_k_EUserMsg_SpectatorTeamChanged"
+	case 312: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatWheel
+		return "CitadelUserMessageIds_k_EUserMsg_ChatWheel"
+	case 313: //deadlock.CitadelUserMessageIds_k_EUserMsg_GoldHistory
+		return "CitadelUserMessageIds_k_EUserMsg_GoldHistory"
+	case 314: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatMsg
+		return "CitadelUserMessageIds_k_EUserMsg_ChatMsg"
+	case 315: //deadlock.CitadelUserMessageIds_k_EUserMsg_QuickResponse
+		return "CitadelUserMessageIds_k_EUserMsg_QuickResponse"
+	case 316: //deadlock.CitadelUserMessageIds_k_EUserMsg_PostMatchDetails
+		return "CitadelUserMessageIds_k_EUserMsg_PostMatchDetails"
+	case 317: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatEvent
+		return "CitadelUserMessageIds_k_EUserMsg_ChatEvent"
+	case 318: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityInterrupted
+		return "CitadelUserMessageIds_k_EUserMsg_AbilityInterrupted"
+	case 319: //deadlock.CitadelUserMessageIds_k_EUserMsg_HeroKilled
+		return "CitadelUserMessageIds_k_EUserMsg_HeroKilled"
+	case 320: //deadlock.CitadelUserMessageIds_k_EUserMsg_ReturnIdol
+		return "CitadelUserMessageIds_k_EUserMsg_ReturnIdol"
+	case 321: //deadlock.CitadelUserMessageIds_k_EUserMsg_SetClientCameraAngles
+		return "CitadelUserMessageIds_k_EUserMsg_SetClientCameraAngles"
+	case 322: //deadlock.CitadelUserMessageIds_k_EUserMsg_MapLine
+		return "CitadelUserMessageIds_k_EUserMsg_MapLine"
+	case 323: //deadlock.CitadelUserMessageIds_k_EUserMsg_BulletHit
+		return "CitadelUserMessageIds_k_EUserMsg_BulletHit"
+	case 324: //deadlock.CitadelUserMessageIds_k_EUserMsg_ObjectiveMask
+		return "CitadelUserMessageIds_k_EUserMsg_ObjectiveMask"
+	case 325: //deadlock.CitadelUserMessageIds_k_EUserMsg_ModifierApplied
+		return "CitadelUserMessageIds_k_EUserMsg_ModifierApplied"
+	case 326: //deadlock.CitadelUserMessageIds_k_EUserMsg_CameraController
+		return "CitadelUserMessageIds_k_EUserMsg_CameraController"
+	case 327: //deadlock.CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied
+		return "CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied"
+	case 329: //deadlock.CitadelUserMessageIds_k_EUserMsg_ObstructedShotFired
+		return "CitadelUserMessageIds_k_EUserMsg_ObstructedShotFired"
+	case 330: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityLateFailure
+		return "CitadelUserMessageIds_k_EUserMsg_AbilityLateFailure"
+	case 331: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityPing
+		return "CitadelUserMessageIds_k_EUserMsg_AbilityPing"
+	case 332: //deadlock.CitadelUserMessageIds_k_EUserMsg_PostProcessingAnim
+		return "CitadelUserMessageIds_k_EUserMsg_PostProcessingAnim"
+	case 333: //deadlock.CitadelUserMessageIds_k_EUserMsg_DeathReplayData
+		return "CitadelUserMessageIds_k_EUserMsg_DeathReplayData"
+	case 334: //deadlock.CitadelUserMessageIds_k_EUserMsg_PlayerLifetimeStatInfo
+		return "CitadelUserMessageIds_k_EUserMsg_PlayerLifetimeStatInfo"
+	case 336: //deadlock.CitadelUserMessageIds_k_EUserMsg_ForceShopClosed
+		return "CitadelUserMessageIds_k_EUserMsg_ForceShopClosed"
+	case 337: //deadlock.CitadelUserMessageIds_k_EUserMsg_StaminaDrained
+		return "CitadelUserMessageIds_k_EUserMsg_StaminaDrained"
+	case 338: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityNotify
+		return "CitadelUserMessageIds_k_EUserMsg_AbilityNotify"
+	case 339: //deadlock.CitadelUserMessageIds_k_EUserMsg_GetDamageStatsResponse
+		return "CitadelUserMessageIds_k_EUserMsg_GetDamageStatsResponse"
+	case 343: //deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetSoundEventParams
+		return "CitadelUserMessageIds_k_EUserMsg_ParticipantSetSoundEventParams"
+	case 344: //deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetLibraryStackFields
+		return "CitadelUserMessageIds_k_EUserMsg_ParticipantSetLibraryStackFields"
+	case 345: //deadlock.CitadelUserMessageIds_k_EUserMsg_CurrencyChanged
+		return "CitadelUserMessageIds_k_EUserMsg_CurrencyChanged"
+	case 346: //deadlock.CitadelUserMessageIds_k_EUserMsg_GameOver
+		return "CitadelUserMessageIds_k_EUserMsg_GameOver"
+	case 347: //deadlock.CitadelUserMessageIds_k_EUserMsg_BossKilled
+		return "CitadelUserMessageIds_k_EUserMsg_BossKilled"
 
 	}
 	return "UNKNOWN:" + strconv.Itoa(int(t))
@@ -1462,697 +1727,826 @@ func (c *Callbacks) toPacketString(t int32, buf []byte) string {
 	switch t {
 	case 0: //deadlock.NET_Messages_net_NOP
 		msg := &deadlock.CNETMsg_NOP{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 3: //deadlock.NET_Messages_net_SplitScreenUser
 		msg := &deadlock.CNETMsg_SplitScreenUser{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 4: //deadlock.NET_Messages_net_Tick
 		msg := &deadlock.CNETMsg_Tick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 5: //deadlock.NET_Messages_net_StringCmd
 		msg := &deadlock.CNETMsg_StringCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 6: //deadlock.NET_Messages_net_SetConVar
 		msg := &deadlock.CNETMsg_SetConVar{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 7: //deadlock.NET_Messages_net_SignonState
 		msg := &deadlock.CNETMsg_SignonState{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 8: //deadlock.NET_Messages_net_SpawnGroup_Load
 		msg := &deadlock.CNETMsg_SpawnGroup_Load{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 9: //deadlock.NET_Messages_net_SpawnGroup_ManifestUpdate
 		msg := &deadlock.CNETMsg_SpawnGroup_ManifestUpdate{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 11: //deadlock.NET_Messages_net_SpawnGroup_SetCreationTick
 		msg := &deadlock.CNETMsg_SpawnGroup_SetCreationTick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 12: //deadlock.NET_Messages_net_SpawnGroup_Unload
 		msg := &deadlock.CNETMsg_SpawnGroup_Unload{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 13: //deadlock.NET_Messages_net_SpawnGroup_LoadCompleted
 		msg := &deadlock.CNETMsg_SpawnGroup_LoadCompleted{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 15: //deadlock.NET_Messages_net_DebugOverlay
 		msg := &deadlock.CNETMsg_DebugOverlay{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 40: //deadlock.SVC_Messages_svc_ServerInfo
 		msg := &deadlock.CSVCMsg_ServerInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 41: //deadlock.SVC_Messages_svc_FlattenedSerializer
 		msg := &deadlock.CSVCMsg_FlattenedSerializer{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 42: //deadlock.SVC_Messages_svc_ClassInfo
 		msg := &deadlock.CSVCMsg_ClassInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 43: //deadlock.SVC_Messages_svc_SetPause
 		msg := &deadlock.CSVCMsg_SetPause{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 44: //deadlock.SVC_Messages_svc_CreateStringTable
 		msg := &deadlock.CSVCMsg_CreateStringTable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 45: //deadlock.SVC_Messages_svc_UpdateStringTable
 		msg := &deadlock.CSVCMsg_UpdateStringTable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 46: //deadlock.SVC_Messages_svc_VoiceInit
 		msg := &deadlock.CSVCMsg_VoiceInit{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 47: //deadlock.SVC_Messages_svc_VoiceData
 		msg := &deadlock.CSVCMsg_VoiceData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 48: //deadlock.SVC_Messages_svc_Print
 		msg := &deadlock.CSVCMsg_Print{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 49: //deadlock.SVC_Messages_svc_Sounds
 		msg := &deadlock.CSVCMsg_Sounds{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 50: //deadlock.SVC_Messages_svc_SetView
 		msg := &deadlock.CSVCMsg_SetView{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 51: //deadlock.SVC_Messages_svc_ClearAllStringTables
 		msg := &deadlock.CSVCMsg_ClearAllStringTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 52: //deadlock.SVC_Messages_svc_CmdKeyValues
 		msg := &deadlock.CSVCMsg_CmdKeyValues{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 53: //deadlock.SVC_Messages_svc_BSPDecal
 		msg := &deadlock.CSVCMsg_BSPDecal{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 54: //deadlock.SVC_Messages_svc_SplitScreen
 		msg := &deadlock.CSVCMsg_SplitScreen{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 55: //deadlock.SVC_Messages_svc_PacketEntities
 		msg := &deadlock.CSVCMsg_PacketEntities{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 56: //deadlock.SVC_Messages_svc_Prefetch
 		msg := &deadlock.CSVCMsg_Prefetch{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 57: //deadlock.SVC_Messages_svc_Menu
 		msg := &deadlock.CSVCMsg_Menu{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 58: //deadlock.SVC_Messages_svc_GetCvarValue
 		msg := &deadlock.CSVCMsg_GetCvarValue{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 59: //deadlock.SVC_Messages_svc_StopSound
 		msg := &deadlock.CSVCMsg_StopSound{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 60: //deadlock.SVC_Messages_svc_PeerList
 		msg := &deadlock.CSVCMsg_PeerList{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 61: //deadlock.SVC_Messages_svc_PacketReliable
 		msg := &deadlock.CSVCMsg_PacketReliable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 62: //deadlock.SVC_Messages_svc_HLTVStatus
 		msg := &deadlock.CSVCMsg_HLTVStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 63: //deadlock.SVC_Messages_svc_ServerSteamID
 		msg := &deadlock.CSVCMsg_ServerSteamID{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 70: //deadlock.SVC_Messages_svc_FullFrameSplit
 		msg := &deadlock.CSVCMsg_FullFrameSplit{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 71: //deadlock.SVC_Messages_svc_RconServerDetails
 		msg := &deadlock.CSVCMsg_RconServerDetails{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 72: //deadlock.SVC_Messages_svc_UserMessage
 		msg := &deadlock.CSVCMsg_UserMessage{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 74: //deadlock.SVC_Messages_svc_Broadcast_Command
 		msg := &deadlock.CSVCMsg_Broadcast_Command{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 75: //deadlock.SVC_Messages_svc_HltvFixupOperatorStatus
 		msg := &deadlock.CSVCMsg_HltvFixupOperatorStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 101: //deadlock.EBaseUserMessages_UM_AchievementEvent
 		msg := &deadlock.CUserMessageAchievementEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 102: //deadlock.EBaseUserMessages_UM_CloseCaption
 		msg := &deadlock.CUserMessageCloseCaption{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 103: //deadlock.EBaseUserMessages_UM_CloseCaptionDirect
 		msg := &deadlock.CUserMessageCloseCaptionDirect{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 104: //deadlock.EBaseUserMessages_UM_CurrentTimescale
 		msg := &deadlock.CUserMessageCurrentTimescale{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 105: //deadlock.EBaseUserMessages_UM_DesiredTimescale
 		msg := &deadlock.CUserMessageDesiredTimescale{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 106: //deadlock.EBaseUserMessages_UM_Fade
 		msg := &deadlock.CUserMessageFade{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 107: //deadlock.EBaseUserMessages_UM_GameTitle
 		msg := &deadlock.CUserMessageGameTitle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 110: //deadlock.EBaseUserMessages_UM_HudMsg
 		msg := &deadlock.CUserMessageHudMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 111: //deadlock.EBaseUserMessages_UM_HudText
 		msg := &deadlock.CUserMessageHudText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 113: //deadlock.EBaseUserMessages_UM_ColoredText
 		msg := &deadlock.CUserMessageColoredText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 114: //deadlock.EBaseUserMessages_UM_RequestState
 		msg := &deadlock.CUserMessageRequestState{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 115: //deadlock.EBaseUserMessages_UM_ResetHUD
 		msg := &deadlock.CUserMessageResetHUD{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 116: //deadlock.EBaseUserMessages_UM_Rumble
 		msg := &deadlock.CUserMessageRumble{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 117: //deadlock.EBaseUserMessages_UM_SayText
 		msg := &deadlock.CUserMessageSayText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 118: //deadlock.EBaseUserMessages_UM_SayText2
 		msg := &deadlock.CUserMessageSayText2{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 119: //deadlock.EBaseUserMessages_UM_SayTextChannel
 		msg := &deadlock.CUserMessageSayTextChannel{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 120: //deadlock.EBaseUserMessages_UM_Shake
 		msg := &deadlock.CUserMessageShake{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 121: //deadlock.EBaseUserMessages_UM_ShakeDir
 		msg := &deadlock.CUserMessageShakeDir{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 122: //deadlock.EBaseUserMessages_UM_WaterShake
 		msg := &deadlock.CUserMessageWaterShake{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 124: //deadlock.EBaseUserMessages_UM_TextMsg
 		msg := &deadlock.CUserMessageTextMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 125: //deadlock.EBaseUserMessages_UM_ScreenTilt
 		msg := &deadlock.CUserMessageScreenTilt{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 128: //deadlock.EBaseUserMessages_UM_VoiceMask
 		msg := &deadlock.CUserMessageVoiceMask{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 130: //deadlock.EBaseUserMessages_UM_SendAudio
 		msg := &deadlock.CUserMessageSendAudio{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 131: //deadlock.EBaseUserMessages_UM_ItemPickup
 		msg := &deadlock.CUserMessageItemPickup{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 132: //deadlock.EBaseUserMessages_UM_AmmoDenied
 		msg := &deadlock.CUserMessageAmmoDenied{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 134: //deadlock.EBaseUserMessages_UM_ShowMenu
 		msg := &deadlock.CUserMessageShowMenu{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 135: //deadlock.EBaseUserMessages_UM_CreditsMsg
 		msg := &deadlock.CUserMessageCreditsMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 136: //deadlock.EBaseEntityMessages_EM_PlayJingle
 		msg := &deadlock.CEntityMessagePlayJingle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 137: //deadlock.EBaseEntityMessages_EM_ScreenOverlay
 		msg := &deadlock.CEntityMessageScreenOverlay{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 138: //deadlock.EBaseEntityMessages_EM_RemoveAllDecals
 		msg := &deadlock.CEntityMessageRemoveAllDecals{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 139: //deadlock.EBaseEntityMessages_EM_PropagateForce
 		msg := &deadlock.CEntityMessagePropagateForce{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 140: //deadlock.EBaseEntityMessages_EM_DoSpark
 		msg := &deadlock.CEntityMessageDoSpark{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 141: //deadlock.EBaseEntityMessages_EM_FixAngle
 		msg := &deadlock.CEntityMessageFixAngle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 142: //deadlock.EBaseUserMessages_UM_CloseCaptionPlaceholder
 		msg := &deadlock.CUserMessageCloseCaptionPlaceholder{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 143: //deadlock.EBaseUserMessages_UM_CameraTransition
 		msg := &deadlock.CUserMessageCameraTransition{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 144: //deadlock.EBaseUserMessages_UM_AudioParameter
 		msg := &deadlock.CUserMessageAudioParameter{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 150: //deadlock.EBaseUserMessages_UM_HapticsManagerPulse
 		msg := &deadlock.CUserMessageHapticsManagerPulse{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 151: //deadlock.EBaseUserMessages_UM_HapticsManagerEffect
 		msg := &deadlock.CUserMessageHapticsManagerEffect{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 153: //deadlock.EBaseUserMessages_UM_UpdateCssClasses
 		msg := &deadlock.CUserMessageUpdateCssClasses{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 154: //deadlock.EBaseUserMessages_UM_ServerFrameTime
 		msg := &deadlock.CUserMessageServerFrameTime{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 155: //deadlock.EBaseUserMessages_UM_LagCompensationError
 		msg := &deadlock.CUserMessageLagCompensationError{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 156: //deadlock.EBaseUserMessages_UM_RequestDllStatus
 		msg := &deadlock.CUserMessageRequestDllStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 157: //deadlock.EBaseUserMessages_UM_RequestUtilAction
 		msg := &deadlock.CUserMessageRequestUtilAction{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 160: //deadlock.EBaseUserMessages_UM_RequestInventory
 		msg := &deadlock.CUserMessageRequestInventory{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 162: //deadlock.EBaseUserMessages_UM_RequestDiagnostic
 		msg := &deadlock.CUserMessageRequestDiagnostic{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 200: //deadlock.EBaseGameEvents_GE_VDebugGameSessionIDEvent
 		msg := &deadlock.CMsgVDebugGameSessionIDEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 201: //deadlock.EBaseGameEvents_GE_PlaceDecalEvent
 		msg := &deadlock.CMsgPlaceDecalEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 202: //deadlock.EBaseGameEvents_GE_ClearWorldDecalsEvent
 		msg := &deadlock.CMsgClearWorldDecalsEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 203: //deadlock.EBaseGameEvents_GE_ClearEntityDecalsEvent
 		msg := &deadlock.CMsgClearEntityDecalsEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 204: //deadlock.EBaseGameEvents_GE_ClearDecalsForSkeletonInstanceEvent
 		msg := &deadlock.CMsgClearDecalsForSkeletonInstanceEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 205: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEventList
 		msg := &deadlock.CMsgSource1LegacyGameEventList{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 206: //deadlock.EBaseGameEvents_GE_Source1LegacyListenEvents
 		msg := &deadlock.CMsgSource1LegacyListenEvents{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 207: //deadlock.EBaseGameEvents_GE_Source1LegacyGameEvent
 		msg := &deadlock.CMsgSource1LegacyGameEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 208: //deadlock.EBaseGameEvents_GE_SosStartSoundEvent
 		msg := &deadlock.CMsgSosStartSoundEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 209: //deadlock.EBaseGameEvents_GE_SosStopSoundEvent
 		msg := &deadlock.CMsgSosStopSoundEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 210: //deadlock.EBaseGameEvents_GE_SosSetSoundEventParams
 		msg := &deadlock.CMsgSosSetSoundEventParams{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 211: //deadlock.EBaseGameEvents_GE_SosSetLibraryStackFields
 		msg := &deadlock.CMsgSosSetLibraryStackFields{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
 	case 212: //deadlock.EBaseGameEvents_GE_SosStopSoundEventHash
 		msg := &deadlock.CMsgSosStopSoundEventHash{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return "ERROR"
 		}
-		return msg.String()
+		return prototext.Format(msg)
+	case 300: //deadlock.CitadelUserMessageIds_k_EUserMsg_Damage
+		msg := &deadlock.CCitadelUserMessage_Damage{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 303: //deadlock.CitadelUserMessageIds_k_EUserMsg_MapPing
+		msg := &deadlock.CCitadelUserMsg_MapPing{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 304: //deadlock.CitadelUserMessageIds_k_EUserMsg_TeamRewards
+		msg := &deadlock.CCitadelUserMsg_TeamRewards{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 308: //deadlock.CitadelUserMessageIds_k_EUserMsg_TriggerDamageFlash
+		msg := &deadlock.CCitadelUserMsg_TriggerDamageFlash{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 309: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilitiesChanged
+		msg := &deadlock.CCitadelUserMsg_AbilitiesChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 310: //deadlock.CitadelUserMessageIds_k_EUserMsg_RecentDamageSummary
+		msg := &deadlock.CCitadelUserMsg_RecentDamageSummary{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 311: //deadlock.CitadelUserMessageIds_k_EUserMsg_SpectatorTeamChanged
+		msg := &deadlock.CCitadelUserMsg_SpectatorTeamChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 312: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatWheel
+		msg := &deadlock.CCitadelUserMsg_ChatWheel{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 313: //deadlock.CitadelUserMessageIds_k_EUserMsg_GoldHistory
+		msg := &deadlock.CCitadelUserMsg_GoldHistory{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 314: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatMsg
+		msg := &deadlock.CCitadelUserMsg_ChatMsg{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 315: //deadlock.CitadelUserMessageIds_k_EUserMsg_QuickResponse
+		msg := &deadlock.CCitadelUserMsg_QuickResponse{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 316: //deadlock.CitadelUserMessageIds_k_EUserMsg_PostMatchDetails
+		msg := &deadlock.CCitadelUserMsg_PostMatchDetails{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 317: //deadlock.CitadelUserMessageIds_k_EUserMsg_ChatEvent
+		msg := &deadlock.CCitadelUserMsg_ChatEvent{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 318: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityInterrupted
+		msg := &deadlock.CCitadelUserMsg_AbilityInterrupted{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 319: //deadlock.CitadelUserMessageIds_k_EUserMsg_HeroKilled
+		msg := &deadlock.CCitadelUserMsg_HeroKilled{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 320: //deadlock.CitadelUserMessageIds_k_EUserMsg_ReturnIdol
+		msg := &deadlock.CCitadelUserMsg_ReturnIdol{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 321: //deadlock.CitadelUserMessageIds_k_EUserMsg_SetClientCameraAngles
+		msg := &deadlock.CCitadelUserMsg_SetClientCameraAngles{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 322: //deadlock.CitadelUserMessageIds_k_EUserMsg_MapLine
+		msg := &deadlock.CCitadelUserMsg_MapLine{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 323: //deadlock.CitadelUserMessageIds_k_EUserMsg_BulletHit
+		msg := &deadlock.CCitadelUserMessage_BulletHit{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 324: //deadlock.CitadelUserMessageIds_k_EUserMsg_ObjectiveMask
+		msg := &deadlock.CCitadelUserMessage_ObjectiveMask{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 325: //deadlock.CitadelUserMessageIds_k_EUserMsg_ModifierApplied
+		msg := &deadlock.CCitadelUserMessage_ModifierApplied{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 326: //deadlock.CitadelUserMessageIds_k_EUserMsg_CameraController
+		msg := &deadlock.CCitadelUserMsg_CameraController{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 327: //deadlock.CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied
+		msg := &deadlock.CCitadelUserMessage_AuraModifierApplied{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 329: //deadlock.CitadelUserMessageIds_k_EUserMsg_ObstructedShotFired
+		msg := &deadlock.CCitadelUserMsg_ObstructedShotFired{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 330: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityLateFailure
+		msg := &deadlock.CCitadelUserMsg_AbilityLateFailure{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 331: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityPing
+		msg := &deadlock.CCitadelUserMsg_AbilityPing{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 332: //deadlock.CitadelUserMessageIds_k_EUserMsg_PostProcessingAnim
+		msg := &deadlock.CCitadelUserMsg_PostProcessingAnim{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 333: //deadlock.CitadelUserMessageIds_k_EUserMsg_DeathReplayData
+		msg := &deadlock.CCitadelUserMsg_DeathReplayData{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 334: //deadlock.CitadelUserMessageIds_k_EUserMsg_PlayerLifetimeStatInfo
+		msg := &deadlock.CCitadelUserMsg_PlayerLifetimeStatInfo{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 336: //deadlock.CitadelUserMessageIds_k_EUserMsg_ForceShopClosed
+		msg := &deadlock.CCitadelUserMsg_ForceShopClosed{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 337: //deadlock.CitadelUserMessageIds_k_EUserMsg_StaminaDrained
+		msg := &deadlock.CCitadelUserMsg_StaminaDrained{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 338: //deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityNotify
+		msg := &deadlock.CCitadelUserMessage_AbilityNotify{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 339: //deadlock.CitadelUserMessageIds_k_EUserMsg_GetDamageStatsResponse
+		msg := &deadlock.CCitadelUserMsg_GetDamageStatsResponse{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 343: //deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetSoundEventParams
+		msg := &deadlock.CCitadelUserMsg_ParticipantSetSoundEventParams{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 344: //deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetLibraryStackFields
+		msg := &deadlock.CCitadelUserMsg_ParticipantSetLibraryStackFields{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 345: //deadlock.CitadelUserMessageIds_k_EUserMsg_CurrencyChanged
+		msg := &deadlock.CCitadelUserMessage_CurrencyChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 346: //deadlock.CitadelUserMessageIds_k_EUserMsg_GameOver
+		msg := &deadlock.CCitadelUserMessage_GameOver{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
+	case 347: //deadlock.CitadelUserMessageIds_k_EUserMsg_BossKilled
+		msg := &deadlock.CCitadelUserMsg_BossKilled{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return "ERROR"
+		}
+		return prototext.Format(msg)
 
 	}
 	return "UNKNOWN:" + strconv.Itoa(int(t))
@@ -2166,8 +2560,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_NOP{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2185,8 +2578,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SplitScreenUser{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2204,8 +2596,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_Tick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2223,8 +2614,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_StringCmd{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2242,8 +2632,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SetConVar{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2261,8 +2650,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SignonState{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2280,8 +2668,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SpawnGroup_Load{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2299,8 +2686,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SpawnGroup_ManifestUpdate{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2318,8 +2704,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SpawnGroup_SetCreationTick{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2337,8 +2722,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SpawnGroup_Unload{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2356,8 +2740,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_SpawnGroup_LoadCompleted{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2375,8 +2758,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CNETMsg_DebugOverlay{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2394,8 +2776,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_ServerInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2413,8 +2794,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_FlattenedSerializer{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2432,8 +2812,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_ClassInfo{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2451,8 +2830,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_SetPause{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2470,8 +2848,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_CreateStringTable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2489,8 +2866,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_UpdateStringTable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2508,8 +2884,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_VoiceInit{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2527,8 +2902,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_VoiceData{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2546,8 +2920,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_Print{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2565,8 +2938,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_Sounds{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2584,8 +2956,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_SetView{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2603,8 +2974,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_ClearAllStringTables{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2622,8 +2992,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_CmdKeyValues{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2641,8 +3010,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_BSPDecal{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2660,8 +3028,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_SplitScreen{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2679,8 +3046,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_PacketEntities{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2698,8 +3064,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_Prefetch{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2717,8 +3082,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_Menu{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2736,8 +3100,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_GetCvarValue{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2755,8 +3118,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_StopSound{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2774,8 +3136,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_PeerList{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2793,8 +3154,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_PacketReliable{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2812,8 +3172,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_HLTVStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2831,8 +3190,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_ServerSteamID{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2850,8 +3208,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_FullFrameSplit{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2869,8 +3226,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_RconServerDetails{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2888,8 +3244,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_UserMessage{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2907,8 +3262,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_Broadcast_Command{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2926,8 +3280,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CSVCMsg_HltvFixupOperatorStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2945,8 +3298,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageAchievementEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2964,8 +3316,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCloseCaption{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -2983,8 +3334,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCloseCaptionDirect{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3002,8 +3352,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCurrentTimescale{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3021,8 +3370,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageDesiredTimescale{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3040,8 +3388,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageFade{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3059,8 +3406,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageGameTitle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3078,8 +3424,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageHudMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3097,8 +3442,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageHudText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3116,8 +3460,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageColoredText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3135,8 +3478,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRequestState{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3154,8 +3496,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageResetHUD{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3173,8 +3514,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRumble{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3192,8 +3532,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageSayText{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3211,8 +3550,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageSayText2{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3230,8 +3568,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageSayTextChannel{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3249,8 +3586,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageShake{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3268,8 +3604,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageShakeDir{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3287,8 +3622,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageWaterShake{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3306,8 +3640,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageTextMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3325,8 +3658,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageScreenTilt{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3344,8 +3676,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageVoiceMask{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3363,8 +3694,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageSendAudio{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3382,8 +3712,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageItemPickup{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3401,8 +3730,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageAmmoDenied{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3420,8 +3748,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageShowMenu{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3439,8 +3766,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCreditsMsg{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3458,8 +3784,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessagePlayJingle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3477,8 +3802,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessageScreenOverlay{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3496,8 +3820,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessageRemoveAllDecals{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3515,8 +3838,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessagePropagateForce{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3534,8 +3856,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessageDoSpark{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3553,8 +3874,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CEntityMessageFixAngle{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3572,8 +3892,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCloseCaptionPlaceholder{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3591,8 +3910,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageCameraTransition{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3610,8 +3928,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageAudioParameter{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3629,8 +3946,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageHapticsManagerPulse{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3648,8 +3964,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageHapticsManagerEffect{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3667,8 +3982,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageUpdateCssClasses{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3686,8 +4000,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageServerFrameTime{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3705,8 +4018,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageLagCompensationError{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3724,8 +4036,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRequestDllStatus{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3743,8 +4054,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRequestUtilAction{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3762,8 +4072,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRequestInventory{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3781,8 +4090,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CUserMessageRequestDiagnostic{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3800,8 +4108,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgVDebugGameSessionIDEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3819,8 +4126,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgPlaceDecalEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3838,8 +4144,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgClearWorldDecalsEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3857,8 +4162,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgClearEntityDecalsEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3876,8 +4180,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgClearDecalsForSkeletonInstanceEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3895,8 +4198,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSource1LegacyGameEventList{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3914,8 +4216,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSource1LegacyListenEvents{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3933,8 +4234,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSource1LegacyGameEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3952,8 +4252,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSosStartSoundEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3971,8 +4270,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSosStopSoundEvent{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -3990,8 +4288,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSosSetSoundEventParams{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -4009,8 +4306,7 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSosSetLibraryStackFields{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
@@ -4028,12 +4324,695 @@ func (c *Callbacks) callByPacketType(t int32, buf []byte) error {
 		}
 
 		msg := &deadlock.CMsgSosStopSoundEventHash{}
-		c.pb.SetBuf(buf)
-		if err := c.pb.Unmarshal(msg); err != nil {
+		if err := proto.Unmarshal(buf, msg); err != nil {
 			return err
 		}
 
 		for _, fn := range c.onCMsgSosStopSoundEventHash {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 300: // deadlock.CitadelUserMessageIds_k_EUserMsg_Damage
+		if c.onCCitadelUserMessage_Damage == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_Damage{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_Damage {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 303: // deadlock.CitadelUserMessageIds_k_EUserMsg_MapPing
+		if c.onCCitadelUserMsg_MapPing == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_MapPing{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_MapPing {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 304: // deadlock.CitadelUserMessageIds_k_EUserMsg_TeamRewards
+		if c.onCCitadelUserMsg_TeamRewards == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_TeamRewards{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_TeamRewards {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 308: // deadlock.CitadelUserMessageIds_k_EUserMsg_TriggerDamageFlash
+		if c.onCCitadelUserMsg_TriggerDamageFlash == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_TriggerDamageFlash{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_TriggerDamageFlash {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 309: // deadlock.CitadelUserMessageIds_k_EUserMsg_AbilitiesChanged
+		if c.onCCitadelUserMsg_AbilitiesChanged == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_AbilitiesChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_AbilitiesChanged {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 310: // deadlock.CitadelUserMessageIds_k_EUserMsg_RecentDamageSummary
+		if c.onCCitadelUserMsg_RecentDamageSummary == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_RecentDamageSummary{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_RecentDamageSummary {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 311: // deadlock.CitadelUserMessageIds_k_EUserMsg_SpectatorTeamChanged
+		if c.onCCitadelUserMsg_SpectatorTeamChanged == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_SpectatorTeamChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_SpectatorTeamChanged {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 312: // deadlock.CitadelUserMessageIds_k_EUserMsg_ChatWheel
+		if c.onCCitadelUserMsg_ChatWheel == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ChatWheel{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ChatWheel {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 313: // deadlock.CitadelUserMessageIds_k_EUserMsg_GoldHistory
+		if c.onCCitadelUserMsg_GoldHistory == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_GoldHistory{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_GoldHistory {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 314: // deadlock.CitadelUserMessageIds_k_EUserMsg_ChatMsg
+		if c.onCCitadelUserMsg_ChatMsg == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ChatMsg{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ChatMsg {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 315: // deadlock.CitadelUserMessageIds_k_EUserMsg_QuickResponse
+		if c.onCCitadelUserMsg_QuickResponse == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_QuickResponse{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_QuickResponse {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 316: // deadlock.CitadelUserMessageIds_k_EUserMsg_PostMatchDetails
+		if c.onCCitadelUserMsg_PostMatchDetails == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_PostMatchDetails{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_PostMatchDetails {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 317: // deadlock.CitadelUserMessageIds_k_EUserMsg_ChatEvent
+		if c.onCCitadelUserMsg_ChatEvent == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ChatEvent{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ChatEvent {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 318: // deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityInterrupted
+		if c.onCCitadelUserMsg_AbilityInterrupted == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_AbilityInterrupted{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_AbilityInterrupted {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 319: // deadlock.CitadelUserMessageIds_k_EUserMsg_HeroKilled
+		if c.onCCitadelUserMsg_HeroKilled == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_HeroKilled{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_HeroKilled {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 320: // deadlock.CitadelUserMessageIds_k_EUserMsg_ReturnIdol
+		if c.onCCitadelUserMsg_ReturnIdol == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ReturnIdol{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ReturnIdol {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 321: // deadlock.CitadelUserMessageIds_k_EUserMsg_SetClientCameraAngles
+		if c.onCCitadelUserMsg_SetClientCameraAngles == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_SetClientCameraAngles{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_SetClientCameraAngles {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 322: // deadlock.CitadelUserMessageIds_k_EUserMsg_MapLine
+		if c.onCCitadelUserMsg_MapLine == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_MapLine{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_MapLine {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 323: // deadlock.CitadelUserMessageIds_k_EUserMsg_BulletHit
+		if c.onCCitadelUserMessage_BulletHit == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_BulletHit{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_BulletHit {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 324: // deadlock.CitadelUserMessageIds_k_EUserMsg_ObjectiveMask
+		if c.onCCitadelUserMessage_ObjectiveMask == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_ObjectiveMask{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_ObjectiveMask {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 325: // deadlock.CitadelUserMessageIds_k_EUserMsg_ModifierApplied
+		if c.onCCitadelUserMessage_ModifierApplied == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_ModifierApplied{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_ModifierApplied {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 326: // deadlock.CitadelUserMessageIds_k_EUserMsg_CameraController
+		if c.onCCitadelUserMsg_CameraController == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_CameraController{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_CameraController {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 327: // deadlock.CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied
+		if c.onCCitadelUserMessage_AuraModifierApplied == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_AuraModifierApplied{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_AuraModifierApplied {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 329: // deadlock.CitadelUserMessageIds_k_EUserMsg_ObstructedShotFired
+		if c.onCCitadelUserMsg_ObstructedShotFired == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ObstructedShotFired{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ObstructedShotFired {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 330: // deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityLateFailure
+		if c.onCCitadelUserMsg_AbilityLateFailure == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_AbilityLateFailure{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_AbilityLateFailure {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 331: // deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityPing
+		if c.onCCitadelUserMsg_AbilityPing == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_AbilityPing{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_AbilityPing {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 332: // deadlock.CitadelUserMessageIds_k_EUserMsg_PostProcessingAnim
+		if c.onCCitadelUserMsg_PostProcessingAnim == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_PostProcessingAnim{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_PostProcessingAnim {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 333: // deadlock.CitadelUserMessageIds_k_EUserMsg_DeathReplayData
+		if c.onCCitadelUserMsg_DeathReplayData == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_DeathReplayData{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_DeathReplayData {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 334: // deadlock.CitadelUserMessageIds_k_EUserMsg_PlayerLifetimeStatInfo
+		if c.onCCitadelUserMsg_PlayerLifetimeStatInfo == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_PlayerLifetimeStatInfo{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_PlayerLifetimeStatInfo {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 336: // deadlock.CitadelUserMessageIds_k_EUserMsg_ForceShopClosed
+		if c.onCCitadelUserMsg_ForceShopClosed == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ForceShopClosed{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ForceShopClosed {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 337: // deadlock.CitadelUserMessageIds_k_EUserMsg_StaminaDrained
+		if c.onCCitadelUserMsg_StaminaDrained == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_StaminaDrained{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_StaminaDrained {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 338: // deadlock.CitadelUserMessageIds_k_EUserMsg_AbilityNotify
+		if c.onCCitadelUserMessage_AbilityNotify == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_AbilityNotify{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_AbilityNotify {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 339: // deadlock.CitadelUserMessageIds_k_EUserMsg_GetDamageStatsResponse
+		if c.onCCitadelUserMsg_GetDamageStatsResponse == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_GetDamageStatsResponse{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_GetDamageStatsResponse {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 343: // deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetSoundEventParams
+		if c.onCCitadelUserMsg_ParticipantSetSoundEventParams == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ParticipantSetSoundEventParams{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ParticipantSetSoundEventParams {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 344: // deadlock.CitadelUserMessageIds_k_EUserMsg_ParticipantSetLibraryStackFields
+		if c.onCCitadelUserMsg_ParticipantSetLibraryStackFields == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_ParticipantSetLibraryStackFields{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_ParticipantSetLibraryStackFields {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 345: // deadlock.CitadelUserMessageIds_k_EUserMsg_CurrencyChanged
+		if c.onCCitadelUserMessage_CurrencyChanged == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_CurrencyChanged{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_CurrencyChanged {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 346: // deadlock.CitadelUserMessageIds_k_EUserMsg_GameOver
+		if c.onCCitadelUserMessage_GameOver == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMessage_GameOver{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMessage_GameOver {
+			if err := fn(msg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+
+	case 347: // deadlock.CitadelUserMessageIds_k_EUserMsg_BossKilled
+		if c.onCCitadelUserMsg_BossKilled == nil {
+			return nil
+		}
+
+		msg := &deadlock.CCitadelUserMsg_BossKilled{}
+		if err := proto.Unmarshal(buf, msg); err != nil {
+			return err
+		}
+
+		for _, fn := range c.onCCitadelUserMsg_BossKilled {
 			if err := fn(msg); err != nil {
 				return err
 			}

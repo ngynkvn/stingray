@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func init() {

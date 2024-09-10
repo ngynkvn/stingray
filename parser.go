@@ -2,8 +2,10 @@ package stingray
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log/slog"
+	"math"
 	"os"
 
 	"github.com/golang/snappy"
@@ -161,29 +163,35 @@ func (p *Parser) Start() (err error) {
 			return
 		}
 
-		p.Logger.Info("parsing next msg...")
-
 		msg, err = p.readOuterMessage()
 		if err != nil {
 			if err == io.EOF {
 				p.Logger.Info("EOF")
 				err = nil
+			} else {
+				p.Logger.With("error", err).Error("issue reading outer message")
 			}
-			p.Logger.Error(err.Error())
 			return
 		}
 
 		p.Tick = msg.tick
 
+		// TODO: DELETE ME
+		logMsg := fmt.Sprintf("==\n%s:\n%s", p.Callbacks.getDemoTypeName(msg.typeId), p.Callbacks.toDemoString(msg.typeId, msg.data))
+		itemLen := len(msg.data)
+		maxLen := 256
+		if len(logMsg) > maxLen {
+			logMsg = logMsg[:maxLen] + "..."
+		}
 		p.Logger.With(
 			"tick", msg.tick,
-			"len", len(msg.data),
+			"len", itemLen,
 			"typeId", msg.typeId,
 			"name", p.Callbacks.getDemoTypeName(msg.typeId),
-		).Info("Parsed")
+		).Info("parsed outer message:\n" + logMsg + "\n==")
 
 		if err = p.Callbacks.callByDemoType(msg.typeId, msg.data); err != nil {
-			p.Logger.With("error", err).Error("Encountered issue")
+			p.Logger.With("error", err, "typeid", msg.typeId, "tick", msg.tick).Error("encountered issue with callback")
 			return
 		}
 	}
@@ -245,7 +253,7 @@ func (p *Parser) readOuterMessage() (*outerMessage, error) {
 	}
 
 	// This appears to actually be an int32, where a -1 means pre-game.
-	if tick == 4294967295 {
+	if tick == math.MaxUint32 {
 		tick = 0
 	}
 

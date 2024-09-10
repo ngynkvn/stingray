@@ -90,13 +90,14 @@ func (p *Parser) onCDemoPacket(m *deadlock.CDemoPacket) error {
 
 	// Dispatch messages in order, returning on handler error.
 	for _, m := range ms {
-		logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(m.t), p.Callbacks.toPacketString(m.t, m.buf))
+		// TODO: DELETE ME
+		logMsg := fmt.Sprintf("==\n%s:\n%s", p.Callbacks.getPacketTypeName(m.t), p.Callbacks.toPacketString(m.t, m.buf))
 		itemLen := len(m.buf)
 		maxLen := 256
 		if len(logMsg) > maxLen {
 			logMsg = logMsg[:maxLen] + "..."
 		}
-		p.Logger.With("packet_len", itemLen).Info(logMsg)
+		p.Logger.With("packet_len", itemLen).Info("parsed packet:\n" + logMsg + "\n==")
 		if err := p.Callbacks.callByPacketType(m.t, m.buf); err != nil {
 			return err
 		}

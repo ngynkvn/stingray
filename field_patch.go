@@ -1,7 +1,7 @@
 package stingray
 
 import (
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 type fieldPatch struct {
