@@ -33,8 +33,20 @@ update-protobufs:
 	rm -rf deadlock
 	./download-protobufs.sh
 	rm -rf \
+		deadlock/base_gcmessages.proto \
 		deadlock/c_peer2peer_netmessages.proto \
+		deadlock/citadel_clientmessages.proto \
+		deadlock/citadel_gcmessages_client.proto \
+		deadlock/citadel_gcmessages_server.proto \
+		deadlock/citadel_usercmd.proto \
+		deadlock/clientmessages.proto \
 		deadlock/connectionless_netmessages.proto \
+		deadlock/econ_gcmessages.proto \
+		deadlock/econ_shared_enums.proto \
+		deadlock/engine_gcmessages.proto \
+		deadlock/enums_clientserver.proto \
+		deadlock/gcsystemmsgs.proto \
+		deadlock/network_connection.proto \
 		deadlock/networksystem_protomessages.proto \
 		deadlock/steamdatagram_messages_auth.proto \
 		deadlock/steamdatagram_messages_sdr.proto \
@@ -49,7 +61,8 @@ update-protobufs:
 		deadlock/steamnetworkingsockets_messages.proto \
 		deadlock/steamnetworkingsockets_messages_certs.proto \
 		deadlock/steamnetworkingsockets_messages_udp.proto \
-		deadlock/uifontfile_format.proto 
+		deadlock/uifontfile_format.proto \
+		deadlock/usercmd.proto
 	$(SED) -i '/^import "network_connection\.proto"/d' deadlock/networkbasetypes.proto
 	$(SED) -i '/^import "google\/protobuf\/descriptor\.proto"/d' deadlock/citadel_gameevents.proto
 	$(SED) -i '/^import "citadel_gcmessages_common.proto"/d' deadlock/citadel_gamemessages.proto
