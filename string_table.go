@@ -42,7 +42,7 @@ type stringTable struct {
 	name              string
 	Items             map[int32]*stringTableItem
 	userDataFixedSize bool
-	userDataSize      int32
+	userDataSizeBits  int32
 	flags             int32
 	varintBitCounts   bool
 }
@@ -76,7 +76,7 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTab
 		name:              m.GetName(),
 		Items:             make(map[int32]*stringTableItem),
 		userDataFixedSize: m.GetUserDataFixedSize(),
-		userDataSize:      m.GetUserDataSize(),
+		userDataSizeBits:  m.GetUserDataSizeBits(),
 		flags:             m.GetFlags(),
 		varintBitCounts:   m.GetUsingVarintBitcounts(),
 	}
@@ -94,7 +94,7 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTab
 	}
 
 	// Parse the items out of the string table data
-	items := parseStringTable(buf, m.GetNumEntries(), t.name, t.userDataFixedSize, t.userDataSize, t.flags, t.varintBitCounts)
+	items := parseStringTable(buf, m.GetNumEntries(), t.name, t.userDataFixedSize, t.userDataSizeBits, t.flags, t.varintBitCounts)
 
 	// Insert the items into the table
 	for _, item := range items {
@@ -133,7 +133,7 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 	}
 
 	// Parse the updates out of the string table data
-	items := parseStringTable(m.GetStringData(), m.GetNumChangedEntries(), t.name, t.userDataFixedSize, t.userDataSize, t.flags, t.varintBitCounts)
+	items := parseStringTable(m.GetStringData(), m.GetNumChangedEntries(), t.name, t.userDataFixedSize, t.userDataSizeBits, t.flags, t.varintBitCounts)
 
 	// Apply the updates to the parser state
 	for _, item := range items {
@@ -187,8 +187,7 @@ func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed b
 	keys := make([]string, 0, stringtableKeyHistorySize)
 
 	// Some tables have no data
-	// TODO: why do this? https://github.com/Rupas1k/source2-demo/blob/master/source2-demo/src/string_table/mod.rs#L63
-	if len(buf) == 0 || name == "decalprecache" {
+	if len(buf) == 0 {
 		return items
 	}
 
