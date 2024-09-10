@@ -29,9 +29,7 @@ func init() {
 	}
 }
 
-var (
-	_sprintf = fmt.Sprintf
-)
+var _sprintf = fmt.Sprintf
 
 // Convert a string to an int32
 func atoi32(s string) (int32, error) {

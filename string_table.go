@@ -87,20 +87,9 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTab
 	// Decompress the data if necessary
 	buf := m.GetStringData()
 	if m.GetDataCompressed() {
-		// old replays = lzss
-		// new replays = snappy
-
-		r := newReader(buf)
 		var err error
-
-		if s := r.readStringN(4); s != "LZSS" {
-			if buf, err = snappy.Decode(nil, buf); err != nil {
-				return err
-			}
-		} else {
-			if buf, err = unlzss(buf); err != nil {
-				return err
-			}
+		if buf, err = snappy.Decode(nil, buf); err != nil {
+			return err
 		}
 	}
 
@@ -123,10 +112,9 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTab
 
 	// Emit events for modifier table entry updates
 	if t.name == "ActiveModifiers" {
-		// TODO: What is this?
-		// if err := p.emitModifierTableEvents(items); err != nil {
-		// 	return err
-		// }
+		if err := p.emitModifierTableEvents(items); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -169,10 +157,9 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 
 	// Emit events for modifier table entry updates
 	if t.name == "ActiveModifiers" {
-		// TODO: what is this?
-		// if err := p.emitModifierTableEvents(items); err != nil {
-		// 	return err
-		// }
+		if err := p.emitModifierTableEvents(items); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -180,12 +167,12 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 
 // Parse a string table data blob, returning a list of item updates.
 func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSize int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
-	defer func() {
-		if err := recover(); err != nil {
-			_debugf("warning: unable to parse string table %s: %s", name, err)
-			return
-		}
-	}()
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		_debugf("warning: unable to parse string table %s: %s", name, err)
+	// 		return
+	// 	}
+	// }()
 
 	items = make([]*stringTableItem, 0)
 

@@ -80,27 +80,23 @@ func (p *Parser) onCDemoPacket(m *deadlock.CDemoPacket) error {
 	// process string tables before game events that may reference them.
 	sort.Sort(ms)
 
-	if p.Logger != nil {
-		p.Logger.With(
-			"tick", p.Tick,
-			"len_messages", len(ms),
-			"packet_names", lo.Map(ms, func(msg *pendingMessage, _ int) string {
-				return p.Callbacks.getPacketTypeName(msg.t)
-			}),
-		).Info("onCDemoPacket")
-		for _, item := range ms {
-			logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(item.t), p.Callbacks.toPacketString(item.t, item.buf))
-			itemLen := len(item.buf)
-			maxLen := 256
-			if len(logMsg) > maxLen {
-				logMsg = logMsg[:maxLen] + "..."
-			}
-			p.Logger.With("packet_len", itemLen).Info(logMsg)
-		}
-	}
+	p.Logger.With(
+		"tick", p.Tick,
+		"len_messages", len(ms),
+		"packet_names", lo.Map(ms, func(msg *pendingMessage, _ int) string {
+			return p.Callbacks.getPacketTypeName(msg.t)
+		}),
+	).Info("onCDemoPacket")
 
 	// Dispatch messages in order, returning on handler error.
 	for _, m := range ms {
+		logMsg := fmt.Sprintf("%s: %s", p.Callbacks.getPacketTypeName(m.t), p.Callbacks.toPacketString(m.t, m.buf))
+		itemLen := len(m.buf)
+		maxLen := 256
+		if len(logMsg) > maxLen {
+			logMsg = logMsg[:maxLen] + "..."
+		}
+		p.Logger.With("packet_len", itemLen).Info(logMsg)
 		if err := p.Callbacks.callByPacketType(m.t, m.buf); err != nil {
 			return err
 		}

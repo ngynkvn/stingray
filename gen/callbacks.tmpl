@@ -3,6 +3,7 @@ package stingray
 import (
   "github.com/ngynkvn/stingray/deadlock"
   "github.com/golang/protobuf/proto"
+  "strconv"
 )
 
 // Callbacks decodes and routes replay events to callback functions
@@ -67,7 +68,7 @@ func (c *Callbacks) getDemoTypeName(t int32) string {
   return "{{ .EnumName }}"
 {{ end }}
   }
-  return "UNKNOWN"
+  return "UNKNOWN:"+strconv.Itoa(int(t))
 }
 
 // TODO: Cleanup
@@ -82,7 +83,7 @@ func (c *Callbacks) toDemoString(t int32, buf []byte) string {
     return msg.String()
 {{ end }}
   }
-  return "UNKNOWN"
+  return "UNKNOWN:"+strconv.Itoa(int(t))
 }
 
 
@@ -93,7 +94,7 @@ func (c *Callbacks) getPacketTypeName(t int32) string {
     return "{{ .EnumName }}"
 {{ end }}
   }
-    return "UNKNOWN"
+  return "UNKNOWN:"+strconv.Itoa(int(t))
 }
 
 // TODO: Cleanup
@@ -108,7 +109,7 @@ func (c *Callbacks) toPacketString(t int32, buf []byte) string {
     return msg.String()
 {{ end }}
   }
-  return "UNKNOWN"
+  return "UNKNOWN:"+strconv.Itoa(int(t))
 }
 
 
