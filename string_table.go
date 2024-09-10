@@ -166,7 +166,7 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 }
 
 // Parse a string table data blob, returning a list of item updates.
-func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSize int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
+func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSizeBits int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
 	// defer func() {
 	// 	if err := recover(); err != nil {
 	// 		_debugf("warning: unable to parse string table %s: %s", name, err)
@@ -256,7 +256,7 @@ func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed b
 			bitSize := uint32(0)
 			isCompressed := false
 			if userDataFixed {
-				bitSize = uint32(userDataSize)
+				bitSize = uint32(userDataSizeBits)
 			} else {
 				if (flags & 0x1) != 0 {
 					isCompressed = r.readBoolean()
