@@ -128,9 +128,12 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 		_panicf("missing string table %d", m.GetTableId())
 	}
 
-	if v(5) {
-		_debugf("tick=%d name=%s changedEntries=%d size=%d", p.Tick, t.name, m.GetNumChangedEntries(), len(m.GetStringData()))
-	}
+	// TODO: Refactor out logging blocks
+	Dbg.Debug("UpdateStringTable",
+		"tick", p.Tick,
+		"name", t.name,
+		"changedEntries", m.GetNumChangedEntries(),
+		"size", len(m.GetStringData()))
 
 	// Parse the updates out of the string table data
 	items := parseStringTable(m.GetStringData(), m.GetNumChangedEntries(), t.name, t.userDataFixedSize, t.userDataSizeBits, t.flags, t.varintBitCounts)
@@ -169,7 +172,9 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSizeBits int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
 	// defer func() {
 	// 	if err := recover(); err != nil {
-	// 		_debugf("warning: unable to parse string table %s: %s", name, err)
+	// 		Dbg.Warn("Unable to parse string table",
+	// 			"name", name,
+	// 			"error", err)
 	// 		return
 	// 	}
 	// }()

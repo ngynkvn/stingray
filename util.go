@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"os"
 	"reflect"
 	"runtime"
@@ -11,21 +12,37 @@ import (
 	"strings"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/lmittmann/tint"
 	"google.golang.org/protobuf/proto"
+)
+
+const (
+	TRACE    = slog.Level(-8)
+	DEBUG    = slog.LevelDebug
+	INFOInfo = slog.LevelInfo
+	WARN     = slog.LevelWarn
+	ERROR    = slog.LevelError
+)
+
+var (
+	Level = new(slog.LevelVar)
+	Dbg   = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+		AddSource: true,
+		Level:     Level,
+		NoColor:   false,
+	}))
 )
 
 func init() {
 	spew.Config.SortKeys = true
 }
 
-var debugLevel uint
-
 func init() {
 	if os.Getenv("DEBUG") != "" {
-		debugLevel = 1
+		Level.Set(DEBUG)
 	}
 	if os.Getenv("TRACE") != "" {
-		debugLevel = 10
+		Level.Set(TRACE)
 	}
 }
 
@@ -38,18 +55,6 @@ func atoi32(s string) (int32, error) {
 		return 0, err
 	}
 	return int32(n), nil
-}
-
-// debugging level check
-func v(level uint) bool {
-	return level <= debugLevel
-}
-
-// printf only if debugging
-func _debugf(format string, args ...interface{}) {
-	if v(1) {
-		fmt.Printf(format+"\n", args...)
-	}
 }
 
 func _printf(format string, args ...interface{}) {

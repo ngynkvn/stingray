@@ -19,7 +19,8 @@ func (p *Parser) emitModifierTableEvents(items []*stringTableItem) error {
 	for _, item := range items {
 		msg := &deadlock.CModifierTableEntry{}
 		if err := proto.Unmarshal(item.Value, msg); err != nil {
-			_debugf("unable to unmarshal ModifierBuffTableEntry: %s", err)
+			Dbg.Error("Failed to unmarshal ModifierBuffTableEntry",
+				"error", err)
 			continue
 		}
 

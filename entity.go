@@ -258,8 +258,8 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 
 	for ; updates > 0; updates-- {
 		index += int32(r.readUBitVar()) + 1
-		if index == 85 {
-			debugLevel = 10
+		if index == 80 {
+			Level.Set(DEBUG)
 		}
 		op = EntityOpNone
 
