@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 import (
 	"encoding/binary"
@@ -22,14 +22,14 @@ func newReader(buf []byte) *reader {
 
 // remBits calculates the number of unread bits in the buffer
 func (r *reader) remBits() uint32 {
-	return r.remBytes() + r.bitCount
+	return r.remBytes()*8 + r.bitCount
 }
 
 func (r *reader) position() string {
 	if r.bitCount > 0 {
 		return fmt.Sprintf("%d.%d", r.pos-1, 8-r.bitCount)
 	}
-	return fmt.Sprintf("%d", r.pos)
+	return fmt.Sprintf("%d.%d", r.pos, r.bitCount)
 }
 
 // remBytes calculates the number of unread bytes in the buffer

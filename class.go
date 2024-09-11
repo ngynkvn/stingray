@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 import (
 	"fmt"
@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
-var gameBuildRegexp = regexp.MustCompile(`/dota_v(\d+)/`)
+var gameBuildRegexp = regexp.MustCompile(`/citadel_v(\d+)/`)
 
 type class struct {
 	classId    int32
@@ -39,7 +39,7 @@ func (c *class) getFieldPaths(fp *fieldPath, state *fieldState) []*fieldPath {
 }
 
 // Internal callback for OnCSVCMsg_ServerInfo.
-func (p *Parser) onCSVCMsg_ServerInfo(m *dota.CSVCMsg_ServerInfo) error {
+func (p *Parser) onCSVCMsg_ServerInfo(m *deadlock.CSVCMsg_ServerInfo) error {
 	// This may be needed to parse PacketEntities.
 	p.classIdSize = uint32(math.Log(float64(m.GetMaxClasses()))/math.Log(2)) + 1
 
@@ -58,7 +58,7 @@ func (p *Parser) onCSVCMsg_ServerInfo(m *dota.CSVCMsg_ServerInfo) error {
 }
 
 // Internal callback for OnCDemoClassInfo.
-func (p *Parser) onCDemoClassInfo(m *dota.CDemoClassInfo) error {
+func (p *Parser) onCDemoClassInfo(m *deadlock.CDemoClassInfo) error {
 	for _, c := range m.GetClasses() {
 		classId := c.GetClassId()
 		networkName := c.GetNetworkName()
@@ -87,9 +87,10 @@ func (p *Parser) updateInstanceBaseline() {
 
 	stringTable, ok := p.stringTables.GetTableByName("instancebaseline")
 	if !ok {
-		if v(1) {
-			_debugf("skipping updateInstanceBaseline: no instancebaseline string table")
-		}
+		// TODO: Refactor out logging blocks
+		_dbg.Debug("Skipping updateInstanceBaseline",
+			"reason", "no instancebaseline string table")
+
 		return
 	}
 

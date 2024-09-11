@@ -7,16 +7,17 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
+	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 	"text/template"
 )
 
-// dotaMessage provides metadata to link an enum type and value to a struct type
-type dotaMessage struct {
+// deadlockMessage provides metadata to link an enum type and value to a struct type
+type deadlockMessage struct {
 	// typeRe provides a regular expression for the matching type
 	// example: /^CDemo/ to match CDemoPacket
 	typeRe *regexp.Regexp
@@ -47,8 +48,8 @@ type dotaMessage struct {
 }
 
 // messageTypes are constant defined message type mappings, edit as necessary.
-var messageTypes = []*dotaMessage{
-	&dotaMessage{
+var messageTypes = []*deadlockMessage{
+	{
 		typeRe:     regexp.MustCompile("^CDemo"),
 		enumName:   "EDemoCommands",
 		enumValues: map[string]int{},
@@ -74,11 +75,15 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: false,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CNETMsg_"),
 		enumName:   "NET_Messages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
+			switch s {
+			case "NET_Messages_net_Disconnect_Legacy":
+				return "", false
+			}
 			return strings.Replace(s, "NET_Messages_net_", "CNETMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
@@ -86,11 +91,15 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CSVCMsg_"),
 		enumName:   "SVC_Messages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
+			switch s {
+			case "SVC_Messages_svc_UserCmds":
+				return "", false
+			}
 			return strings.Replace(s, "SVC_Messages_svc_", "CSVCMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
@@ -98,20 +107,39 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CUserMessage"),
 		enumName:   "EBaseUserMessages",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
 			switch s {
-			case "EBaseUserMessages_UM_ParticleManager":
+			case "EBaseUserMessages_UM_ParticleManager": // CUserMsg_ParticleManager ??
 				return "", false
-			case "EBaseUserMessages_UM_HudError":
-				return "", false // CUserMsg_HudError ??
-			case "EBaseUserMessages_UM_CustomGameEvent":
-				return "", false // CClientMsg_CustomGameEvent ?
+			case "EBaseUserMessages_UM_HudError": // CUserMsg_HudError ??
+				return "", false
+			case "EBaseUserMessages_UM_CustomGameEvent": // CClientMsg_CustomGameEvent ?
+				return "", false
 			case "EBaseUserMessages_UM_MAX_BASE":
 				return "", false
+			case "EBaseUserMessages_UM_AnimGraphUpdate":
+				return "", false
+			case "EBaseUserMessages_UM_InventoryResponse":
+				return "", false
+			case "EBaseUserMessages_UM_DllStatusResponse":
+				return "", false
+			case "EBaseUserMessages_UM_CommandQueueState":
+				return "", false
+			case "EBaseUserMessages_UM_UtilActionResponse":
+				return "", false
+			case "EBaseUserMessages_UM_DiagnosticResponse":
+				return "", false
+				// TODO: Figure out what these types are
+			case "EBaseUserMessages_UM_NotifyResponseFound":
+				return "CUserMessage_NotifyResponseFound", false
+			case "EBaseUserMessages_UM_ExtraUserData":
+				return "CUserMessage_ExtraUserData", false
+			case "EBaseUserMessages_UM_PlayResponseConditional":
+				return "CUserMessage_PlayResponseConditional", false
 			}
 			return strings.Replace(s, "EBaseUserMessages_UM_", "CUserMessage", 1), true
 		},
@@ -120,7 +148,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CEntityMessage"),
 		enumName:   "EBaseEntityMessages",
 		enumValues: map[string]int{},
@@ -132,7 +160,7 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
+	{
 		typeRe:     regexp.MustCompile("^CMsg"),
 		enumName:   "EBaseGameEvents",
 		enumValues: map[string]int{},
@@ -144,30 +172,32 @@ var messageTypes = []*dotaMessage{
 		},
 		isPacket: true,
 	},
-	&dotaMessage{
-		typeRe:     regexp.MustCompile("^CDOTAUserMsg"),
-		enumName:   "EDotaUserMessages",
+	{
+		typeRe:     regexp.MustCompile("^CCitadelUserMsg"),
+		enumName:   "CitadelUserMessageIds",
 		enumValues: map[string]int{},
 		enumToType: func(s string) (string, bool) {
-			switch s {
-			case "EDotaUserMessages_DOTA_UM_AddUnitToSelection":
-				return "", false
-			case "EDotaUserMessages_DOTA_UM_CombatLogData":
-				return "", false
-			case "EDotaUserMessages_DOTA_UM_CharacterSpeakConcept":
-				return "", false
-			case "EDotaUserMessages_DOTA_UM_TournamentDrop":
-				return "CMsgGCToClientTournamentItemDrop", true
-			case "EDotaUserMessages_DOTA_UM_StatsHeroDetails":
-				return "CDOTAUserMsg_StatsHeroMinuteDetails", true
-			case "EDotaUserMessages_DOTA_UM_CombatLogDataHLTV":
-				return "CMsgDOTACombatLogEntry", true
-			case "EDotaUserMessages_DOTA_UM_MatchMetadata":
-				return "CDOTAMatchMetadataFile", true
-			case "EDotaUserMessages_DOTA_UM_MatchDetails":
+			if slices.Contains([]string{
+				"CitadelUserMessageIds_k_EUserMsg_AbilityFailed",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStartSoundEvent",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStopSoundEvent",
+				"CitadelUserMessageIds_k_EUserMsg_ParticipantStopSoundEventHash",
+			}, s) {
 				return "", false
 			}
-			return strings.Replace(s, "EDotaUserMessages_DOTA_UM_", "CDOTAUserMsg_", 1), true
+			if slices.Contains([]string{
+				"CitadelUserMessageIds_k_EUserMsg_CurrencyChanged",
+				"CitadelUserMessageIds_k_EUserMsg_ObjectiveMask",
+				"CitadelUserMessageIds_k_EUserMsg_AbilityNotify",
+				"CitadelUserMessageIds_k_EUserMsg_ModifierApplied",
+				"CitadelUserMessageIds_k_EUserMsg_GameOver",
+				"CitadelUserMessageIds_k_EUserMsg_AuraModifierApplied",
+				"CitadelUserMessageIds_k_EUserMsg_Damage",
+				"CitadelUserMessageIds_k_EUserMsg_BulletHit",
+			}, s) {
+				return strings.Replace(s, "CitadelUserMessageIds_k_EUserMsg_", "CCitadelUserMessage_", 1), true
+			}
+			return strings.Replace(s, "CitadelUserMessageIds_k_EUserMsg_", "CCitadelUserMsg_", 1), true
 		},
 		enumToCallback: func(s string) (string, bool) {
 			return "", false
@@ -178,10 +208,13 @@ var messageTypes = []*dotaMessage{
 
 // messageTypeNames will be populated during type discovery, holding names of
 // known struct types so that we never write invalid types to the output file
-var messageTypeNames = map[string]bool{}
+var (
+	messageTypeNames = map[string]bool{}
+	marked           = map[string]bool{}
+)
 
 // findMessageByTypeName finds a message type by type name (ex. CDemoPacket)
-func findMessageByTypeName(s string) (*dotaMessage, bool) {
+func findMessageByTypeName(s string) (*deadlockMessage, bool) {
 	for _, t := range messageTypes {
 		if t.typeRe.MatchString(s) {
 			return t, true
@@ -191,7 +224,7 @@ func findMessageByTypeName(s string) (*dotaMessage, bool) {
 }
 
 // findMessageByEnumName finds a message type by enum name (ex. EDemoCommands)
-func findMessageByEnumName(s string) (*dotaMessage, bool) {
+func findMessageByEnumName(s string) (*deadlockMessage, bool) {
 	for _, t := range messageTypes {
 		if s == t.enumName {
 			return t, true
@@ -201,9 +234,9 @@ func findMessageByEnumName(s string) (*dotaMessage, bool) {
 }
 
 func main() {
-	discoverTypes("./dota")
+	discoverTypes("./deadlock")
 
-	buf, err := ioutil.ReadFile("gen/callbacks.tmpl")
+	buf, err := os.ReadFile("gen/callbacks.tmpl")
 	if err != nil {
 		panic(err)
 	}
@@ -227,7 +260,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile("callbacks.go", source, 0644); err != nil {
+	if err := os.WriteFile("callbacks.go", source, 0644); err != nil {
 		panic(err)
 	}
 }
@@ -307,7 +340,7 @@ func makeContext() ctx {
 	return c
 }
 
-// discoverTypes walks the go files in the dota directory and populates the data
+// discoverTypes walks the go files in the deadlock directory and populates the data
 // in messageTypes and messageTypeNames.
 func discoverTypes(protoPath string) {
 	fileset := token.NewFileSet()
@@ -332,8 +365,9 @@ func discoverTypes(protoPath string) {
 							// Type specs contain types such as CDemoPacket. Extract the type
 							// name and mark it as found in the corresponding message type.
 							typeName := t.Name.String()
-							//if _, ok := findMessageByTypeName(typeName); ok {
+							// if _, ok := findMessageByTypeName(typeName); ok {
 							messageTypeNames[typeName] = true
+							marked[typeName] = false
 							//}
 
 						case *ast.ValueSpec:

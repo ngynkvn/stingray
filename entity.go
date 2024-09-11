@@ -1,9 +1,11 @@
-package manta
+package stingray
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 // EntityOp is a bitmask representing the type of operation performed on an Entity
@@ -207,6 +209,17 @@ func (p *Parser) FindEntityByHandle(handle uint64) *Entity {
 	return e
 }
 
+// TODO: remove, as it is temporary for debugging purposes
+var _logdump *slog.Logger
+
+func init() {
+	f, err := os.Create("./tmp/dump.json")
+	if err != nil {
+		panic(err)
+	}
+	_logdump = slog.New(slog.NewJSONHandler(f, nil))
+}
+
 // FilterEntity finds entities by callback
 func (p *Parser) FilterEntity(fb func(*Entity) bool) []*Entity {
 	entities := make([]*Entity, 0, 0)
@@ -219,11 +232,11 @@ func (p *Parser) FilterEntity(fb func(*Entity) bool) []*Entity {
 }
 
 // Internal Callback for OnCSVCMsg_PacketEntities.
-func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error {
+func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) error {
 	r := newReader(m.GetEntityData())
 
-	var index = int32(-1)
-	var updates = int(m.GetUpdatedEntries())
+	index := int32(-1)
+	updates := int(m.GetUpdatedEntries())
 	var cmd uint32
 	var classId int32
 	var serial int32
@@ -245,9 +258,13 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error 
 
 	for ; updates > 0; updates-- {
 		index += int32(r.readUBitVar()) + 1
+		if index == 80 {
+			Level.Set(DEBUG)
+		}
 		op = EntityOpNone
 
 		cmd = r.readBits(2)
+		_logdump = _logdump.With("index", index, "cmd", cmd, "initial_position", r.position())
 		if cmd&0x01 == 0 {
 			if cmd&0x02 != 0 {
 				classId = int32(r.readBits(p.classIdSize))
@@ -272,7 +289,7 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error 
 
 			} else {
 				if e = p.entities[index]; e == nil {
-					_panicf("unable to find existing entity %d", index)
+					_panicf("unable to find existing entity %d %d", index, cmd)
 				}
 
 				op = EntityOpUpdated
@@ -283,10 +300,9 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *dota.CSVCMsg_PacketEntities) error 
 
 				readFields(r, e.class.serializer, e.state)
 			}
-
 		} else {
 			if e = p.entities[index]; e == nil {
-				_panicf("unable to find existing entity %d", index)
+				_panicf("unable to find existing entity %d %d", index, cmd)
 			}
 
 			if !e.active {

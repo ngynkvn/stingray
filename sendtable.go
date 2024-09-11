@@ -1,8 +1,8 @@
-package manta
+package stingray
 
 import (
-	"github.com/dotabuff/manta/dota"
-	"github.com/golang/protobuf/proto"
+	"github.com/ngynkvn/stingray/deadlock"
+	"google.golang.org/protobuf/proto"
 )
 
 var pointerTypes = map[string]bool{
@@ -25,11 +25,11 @@ var itemCounts = map[string]int{
 }
 
 // Internal callback for OnCDemoSendTables.
-func (p *Parser) onCDemoSendTables(m *dota.CDemoSendTables) error {
+func (p *Parser) onCDemoSendTables(m *deadlock.CDemoSendTables) error {
 	r := newReader(m.GetData())
 	buf := r.readBytes(r.readVarUint32())
 
-	msg := &dota.CSVCMsg_FlattenedSerializer{}
+	msg := &deadlock.CSVCMsg_FlattenedSerializer{}
 	if err := proto.Unmarshal(buf, msg); err != nil {
 		return err
 	}

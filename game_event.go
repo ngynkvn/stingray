@@ -1,10 +1,10 @@
-package manta
+package stingray
 
 import (
 	"bytes"
 	"fmt"
 
-	"github.com/dotabuff/manta/dota"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 const (
@@ -30,20 +30,20 @@ var gameEventTypeNames = map[int32]string{
 // Represents a game event. Includes a type and the actual message.
 type GameEvent struct {
 	t *gameEventType
-	m *dota.CMsgSource1LegacyGameEvent
+	m *deadlock.CMsgSource1LegacyGameEvent
 }
 
 func (ge *GameEvent) TypeName() string {
-	return dota.DOTA_COMBATLOG_TYPES_name[ge.m.GetKeys()[0].GetValByte()]
+	return deadlock.ReplayEventTypeT_name[ge.m.GetKeys()[0].GetValByte()]
 }
 
-func (ge *GameEvent) Type() dota.DOTA_COMBATLOG_TYPES {
-	return dota.DOTA_COMBATLOG_TYPES(ge.m.GetKeys()[0].GetValByte())
+func (ge *GameEvent) Type() deadlock.ReplayEventTypeT {
+	return deadlock.ReplayEventTypeT(ge.m.GetKeys()[0].GetValByte())
 }
 
 func (ge *GameEvent) String() string {
 	keys := ge.m.GetKeys()
-	name := dota.DOTA_COMBATLOG_TYPES_name[keys[0].GetValByte()]
+	name := deadlock.ReplayEventTypeT_name[keys[0].GetValByte()]
 	buf := bytes.NewBufferString("\n  " + name + "\n")
 
 	for name, field := range ge.t.fields {
@@ -81,7 +81,7 @@ func (e *GameEvent) GetString(name string) (string, error) {
 
 	// Make sure it's a string.
 	if k.GetType() != gameEventTypeString {
-		return "", _errorf("field %s: expected string, got %s", name, gameEventTypeNames[k.GetType()])
+		return "", fmt.Errorf("field %s: expected string, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValString(), nil
@@ -97,7 +97,7 @@ func (e *GameEvent) GetFloat32(name string) (float32, error) {
 
 	// Make sure it's a bool.
 	if k.GetType() != gameEventTypeFloat {
-		return 0.0, _errorf("field %s: expected float, got %s", name, gameEventTypeNames[k.GetType()])
+		return 0.0, fmt.Errorf("field %s: expected float, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValFloat(), nil
@@ -121,7 +121,7 @@ func (e *GameEvent) GetInt32(name string) (int32, error) {
 		return k.GetValByte(), nil
 	}
 
-	return 0, _errorf("field %s: expected int, got %s", name, gameEventTypeNames[k.GetType()])
+	return 0, fmt.Errorf("field %s: expected int, got %s", name, gameEventTypeNames[k.GetType()])
 }
 
 // Gets the bool value of a named field.
@@ -134,7 +134,7 @@ func (e *GameEvent) GetBool(name string) (bool, error) {
 
 	// Make sure it's a bool.
 	if k.GetType() != gameEventTypeBool {
-		return false, _errorf("field %s: expected bool, got %s", name, gameEventTypeNames[k.GetType()])
+		return false, fmt.Errorf("field %s: expected bool, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValBool(), nil
@@ -150,21 +150,21 @@ func (e *GameEvent) GetUint64(name string) (uint64, error) {
 
 	// Make sure it's a uint64.
 	if k.GetType() != gameEventTypeUint64 {
-		return 0, _errorf("field %s: expected uint64, got %s", name, gameEventTypeNames[k.GetType()])
+		return 0, fmt.Errorf("field %s: expected uint64, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValUint64(), nil
 }
 
 // Finds the key in the game event which corresponds to a given name.
-func (e *GameEvent) getEventKey(name string) (*dota.CMsgSource1LegacyGameEventKeyT, error) {
+func (e *GameEvent) getEventKey(name string) (*deadlock.CMsgSource1LegacyGameEventKeyT, error) {
 	f, ok := e.t.fields[name]
 	if !ok {
-		return nil, _errorf("field %s: missing", name)
+		return nil, fmt.Errorf("field %s: missing", name)
 	}
 
 	if f.i > len(e.m.GetKeys()) {
-		return nil, _errorf("field %s: %d out of range", name, f.i)
+		return nil, fmt.Errorf("field %s: %d out of range", name, f.i)
 	}
 
 	return e.m.GetKeys()[f.i], nil
@@ -191,7 +191,7 @@ type gameEventField struct {
 
 // Internal handler for callback OnCMsgSource1LegacyGameEventList.
 // Registers game event names and types with the parser for O(1) lookup later.
-func (p *Parser) onCMsgSource1LegacyGameEventList(m *dota.CMsgSource1LegacyGameEventList) error {
+func (p *Parser) onCMsgSource1LegacyGameEventList(m *deadlock.CMsgSource1LegacyGameEventList) error {
 	for _, d := range m.GetDescriptors() {
 		t := &gameEventType{
 			eventId: d.GetEventid(),
@@ -214,11 +214,11 @@ func (p *Parser) onCMsgSource1LegacyGameEventList(m *dota.CMsgSource1LegacyGameE
 
 // Internal handler for callback OnCMsgSource1LegacyGameEvent.
 // Looks up the name and type of an event and offers it to registered handlers.
-func (p *Parser) onCMsgSource1LegacyGameEvent(m *dota.CMsgSource1LegacyGameEvent) error {
+func (p *Parser) onCMsgSource1LegacyGameEvent(m *deadlock.CMsgSource1LegacyGameEvent) error {
 	// Look up the handler name by event id.
 	name, ok := p.gameEventNames[m.GetEventid()]
 	if !ok {
-		return _errorf("unknown event id: %d", m.GetEventid())
+		return fmt.Errorf("unknown event id: %d", m.GetEventid())
 	}
 
 	// Get the handlers for the event name. Return early if none.
@@ -230,7 +230,7 @@ func (p *Parser) onCMsgSource1LegacyGameEvent(m *dota.CMsgSource1LegacyGameEvent
 	// Get the type for the event.
 	t, ok := p.gameEventTypes[name]
 	if !ok {
-		return _errorf("unknown event type: %s", name)
+		return fmt.Errorf("unknown event type: %s", name)
 	}
 
 	// Create a GameEvent, offer to all handlers.

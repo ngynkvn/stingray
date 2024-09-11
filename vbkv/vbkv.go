@@ -38,12 +38,12 @@ func Parse(buffer *bytes.Buffer) (kv map[string]interface{}, err error) {
 func (p *Parser) Parse() (kv map[string]interface{}, err error) {
 	entities := map[string]interface{}{}
 
-	defer func() {
-		if r := recover(); r != nil {
-			kv = entities
-			err = fmt.Errorf("%v", r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		kv = entities
+	// 		err = fmt.Errorf("%v", r)
+	// 	}
+	// }()
 
 	p.parseString() // "Dota 2 Saved Game"
 

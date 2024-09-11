@@ -1,8 +1,8 @@
-package manta
+package stingray
 
 import (
-	"github.com/dotabuff/manta/dota"
 	"github.com/golang/snappy"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 const (
@@ -42,7 +42,7 @@ type stringTable struct {
 	name              string
 	Items             map[int32]*stringTableItem
 	userDataFixedSize bool
-	userDataSize      int32
+	userDataSizeBits  int32
 	flags             int32
 	varintBitCounts   bool
 }
@@ -62,21 +62,21 @@ type stringTableItem struct {
 // These appear to be periodic state dumps and appear every 1800 outer ticks.
 // XXX TODO: decide if we want to at all integrate these updates,
 // or trust create/update entirely. Let's ignore them for now.
-func (p *Parser) onCDemoStringTables(m *dota.CDemoStringTables) error {
+func (p *Parser) onCDemoStringTables(m *deadlock.CDemoStringTables) error {
 	return nil
 }
 
 // Internal callback for CSVCMsg_CreateStringTable.
 // XXX TODO: This is currently using an artificial, internally crafted message.
 // This should be replaced with the real message once we have updated protos.
-func (p *Parser) onCSVCMsg_CreateStringTable(m *dota.CSVCMsg_CreateStringTable) error {
+func (p *Parser) onCSVCMsg_CreateStringTable(m *deadlock.CSVCMsg_CreateStringTable) error {
 	// Create a new string table at the next index position
 	t := &stringTable{
 		index:             p.stringTables.nextIndex,
 		name:              m.GetName(),
 		Items:             make(map[int32]*stringTableItem),
 		userDataFixedSize: m.GetUserDataFixedSize(),
-		userDataSize:      m.GetUserDataSize(),
+		userDataSizeBits:  m.GetUserDataSizeBits(),
 		flags:             m.GetFlags(),
 		varintBitCounts:   m.GetUsingVarintBitcounts(),
 	}
@@ -87,25 +87,14 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *dota.CSVCMsg_CreateStringTable) 
 	// Decompress the data if necessary
 	buf := m.GetStringData()
 	if m.GetDataCompressed() {
-		// old replays = lzss
-		// new replays = snappy
-
-		r := newReader(buf)
 		var err error
-
-		if s := r.readStringN(4); s != "LZSS" {
-			if buf, err = snappy.Decode(nil, buf); err != nil {
-				return err
-			}
-		} else {
-			if buf, err = unlzss(buf); err != nil {
-				return err
-			}
+		if buf, err = snappy.Decode(nil, buf); err != nil {
+			return err
 		}
 	}
 
 	// Parse the items out of the string table data
-	items := parseStringTable(buf, m.GetNumEntries(), t.name, t.userDataFixedSize, t.userDataSize, t.flags, t.varintBitCounts)
+	items := parseStringTable(buf, m.GetNumEntries(), t.name, t.userDataFixedSize, t.userDataSizeBits, t.flags, t.varintBitCounts)
 
 	// Insert the items into the table
 	for _, item := range items {
@@ -122,29 +111,32 @@ func (p *Parser) onCSVCMsg_CreateStringTable(m *dota.CSVCMsg_CreateStringTable) 
 	}
 
 	// Emit events for modifier table entry updates
-	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
-	}
+	// if t.name == "ActiveModifiers" {
+	// 	if err := p.emitModifierTableEvents(items); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
 
 // Internal callback for CSVCMsg_UpdateStringTable.
-func (p *Parser) onCSVCMsg_UpdateStringTable(m *dota.CSVCMsg_UpdateStringTable) error {
+func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTable) error {
 	// TODO: integrate
 	t, ok := p.stringTables.Tables[m.GetTableId()]
 	if !ok {
 		_panicf("missing string table %d", m.GetTableId())
 	}
 
-	if v(5) {
-		_debugf("tick=%d name=%s changedEntries=%d size=%d", p.Tick, t.name, m.GetNumChangedEntries(), len(m.GetStringData()))
-	}
+	// TODO: Refactor out logging blocks
+	_dbg.Debug("UpdateStringTable",
+		"tick", p.Tick,
+		"name", t.name,
+		"changedEntries", m.GetNumChangedEntries(),
+		"size", len(m.GetStringData()))
 
 	// Parse the updates out of the string table data
-	items := parseStringTable(m.GetStringData(), m.GetNumChangedEntries(), t.name, t.userDataFixedSize, t.userDataSize, t.flags, t.varintBitCounts)
+	items := parseStringTable(m.GetStringData(), m.GetNumChangedEntries(), t.name, t.userDataFixedSize, t.userDataSizeBits, t.flags, t.varintBitCounts)
 
 	// Apply the updates to the parser state
 	for _, item := range items {
@@ -167,23 +159,25 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *dota.CSVCMsg_UpdateStringTable) 
 	}
 
 	// Emit events for modifier table entry updates
-	if t.name == "ActiveModifiers" {
-		if err := p.emitModifierTableEvents(items); err != nil {
-			return err
-		}
-	}
+	// if t.name == "ActiveModifiers" {
+	// 	if err := p.emitModifierTableEvents(items); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
 
 // Parse a string table data blob, returning a list of item updates.
-func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSize int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
-	defer func() {
-		if err := recover(); err != nil {
-			_debugf("warning: unable to parse string table %s: %s", name, err)
-			return
-		}
-	}()
+func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed bool, userDataSizeBits int32, flags int32, varintBitCounts bool) (items []*stringTableItem) {
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		Dbg.Warn("Unable to parse string table",
+	// 			"name", name,
+	// 			"error", err)
+	// 		return
+	// 	}
+	// }()
 
 	items = make([]*stringTableItem, 0)
 
@@ -267,7 +261,7 @@ func parseStringTable(buf []byte, numUpdates int32, name string, userDataFixed b
 			bitSize := uint32(0)
 			isCompressed := false
 			if userDataFixed {
-				bitSize = uint32(userDataSize)
+				bitSize = uint32(userDataSizeBits)
 			} else {
 				if (flags & 0x1) != 0 {
 					isCompressed = r.readBoolean()

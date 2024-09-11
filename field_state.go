@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 type fieldState struct {
 	state []interface{}

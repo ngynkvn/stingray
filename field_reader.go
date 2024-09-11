@@ -1,4 +1,4 @@
-package manta
+package stingray
 
 import (
 	"strings"
@@ -10,17 +10,33 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 	for _, fp := range fps {
 		decoder := s.getDecoderForFieldPath(fp, 0)
 
-		if v(6) {
-			name := strings.Join(s.getNameForFieldPath(fp, 0), ".")
-			typ := s.getTypeForFieldPath(fp, 0)
-			field := s.getFieldForFieldPath(fp, 0)
-			_debugf("NEW reading ser=%s path=%s pos=%s name=%s type=%s decoder=%s model=%s", s.name, fp.String(), r.position(), name, typ, _nameof(decoder), field.modelString())
-		}
+		// TODO: Refactor out logging blocks
+		name := strings.Join(s.getNameForFieldPath(fp, 0), ".")
+		typ := s.getTypeForFieldPath(fp, 0)
+		field := s.getFieldForFieldPath(fp, 0)
+		_dbg.Debug("Reading field",
+			"position", r.position(),
+			"path", fp.String(),
+			"name", name,
+			"serializer", s.name,
+			"type", typ,
+			"decoder", _nameof(decoder),
+			"encoder", field.encodeFlags,
+			"model", field.modelString())
+		_logdump.With(
+			"pos", r.position(),
+			"path", fp.String(),
+			"name", name,
+			"type", typ,
+			"decoder", _nameof(decoder),
+			"ser", s.name,
+			"encoder", field.encoder).Info("")
 
 		val := decoder(r)
 		state.set(fp, val)
 
-		if v(6) {
+		// TODO: Refactor out logging blocks
+		if Level.Level() == DEBUG {
 			name := strings.Join(s.getNameForFieldPath(fp, 0), ".")
 			fp2 := newFieldPath()
 			b := s.getFieldPathForName(fp2, name)
@@ -35,7 +51,7 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 
 			fp2.release()
 
-			_debugf(" => %#v", val)
+			_dbg.Debug("Field value", "value", val)
 		}
 
 		fp.release()

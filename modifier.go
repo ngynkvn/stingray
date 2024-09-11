@@ -1,11 +1,11 @@
-package manta
+package stingray
 
 import (
-	"github.com/dotabuff/manta/dota"
-	"github.com/golang/protobuf/proto"
+	"github.com/ngynkvn/stingray/deadlock"
+	"google.golang.org/protobuf/proto"
 )
 
-type ModifierTableEntryHandler func(msg *dota.CDOTAModifierBuffTableEntry) error
+type ModifierTableEntryHandler func(msg *deadlock.CModifierTableEntry) error
 
 // OnModifierTableEntry registers a handler for when a ModifierBuffTableEntry
 // is created or updated.
@@ -17,9 +17,10 @@ func (p *Parser) OnModifierTableEntry(fn ModifierTableEntryHandler) {
 // from the given string table items.
 func (p *Parser) emitModifierTableEvents(items []*stringTableItem) error {
 	for _, item := range items {
-		msg := &dota.CDOTAModifierBuffTableEntry{}
-		if err := proto.NewBuffer(item.Value).Unmarshal(msg); err != nil {
-			_debugf("unable to unmarshal ModifierBuffTableEntry: %s", err)
+		msg := &deadlock.CModifierTableEntry{}
+		if err := proto.Unmarshal(item.Value, msg); err != nil {
+			_dbg.Error("Failed to unmarshal ModifierBuffTableEntry",
+				"error", err)
 			continue
 		}
 

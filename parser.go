@@ -1,17 +1,23 @@
-package manta
+package stingray
 
 import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
+	"math"
+	"os"
 
-	"github.com/dotabuff/manta/dota"
 	"github.com/golang/snappy"
+	"github.com/lmittmann/tint"
+	"github.com/ngynkvn/stingray/deadlock"
 )
 
 // The first 8 bytes of a replay for Source 1 and Source 2
-var magicSource1 = []byte{'P', 'U', 'F', 'D', 'E', 'M', 'S', '\000'}
-var magicSource2 = []byte{'P', 'B', 'D', 'E', 'M', 'S', '2', '\000'}
+var (
+	magicSource1 = []byte{'P', 'U', 'F', 'D', 'E', 'M', 'S', '\000'}
+	magicSource2 = []byte{'P', 'B', 'D', 'E', 'M', 'S', '2', '\000'}
+)
 
 // Parser is an instance of the replay parser
 type Parser struct {
@@ -30,6 +36,9 @@ type Parser struct {
 
 	// AfterStopCallback is a function to be called when the parser stops.
 	AfterStopCallback func()
+
+	// Set to to enable debug logging
+	Logger *slog.Logger
 
 	classBaselines             map[int32][]byte
 	classesById                map[int32]*class
@@ -50,6 +59,15 @@ type Parser struct {
 	stopAtTick                 uint32
 }
 
+type ParserOpt func(*Parser) *Parser
+
+func Logger(p *Parser) *Parser {
+	p.Logger = slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+		AddSource: true,
+	}))
+	return p
+}
+
 // Create a new parser from a byte slice.
 func NewParser(buf []byte) (*Parser, error) {
 	r := bytes.NewReader(buf)
@@ -57,13 +75,14 @@ func NewParser(buf []byte) (*Parser, error) {
 }
 
 // Create a new Parser from an io.Reader
-func NewStreamParser(r io.Reader) (*Parser, error) {
+func NewStreamParser(r io.Reader, opts ...ParserOpt) (*Parser, error) {
 	// Create a new parser with an internal reader for the given buffer.
 	parser := &Parser{
 		Callbacks: newCallbacks(),
 		Tick:      0,
 		NetTick:   0,
 		GameBuild: 0,
+		Logger:    slog.New(slog.NewJSONHandler(io.Discard, nil)),
 
 		classBaselines:    make(map[int32][]byte),
 		classesById:       make(map[int32]*class),
@@ -79,13 +98,17 @@ func NewStreamParser(r io.Reader) (*Parser, error) {
 		stringTables:      newStringTables(),
 	}
 
+	for _, fn := range opts {
+		parser = fn(parser)
+	}
+
 	// Parse out the header, ensuring that it's valid.
 	magic, err := parser.stream.readBytes(8)
 	if err != nil {
 		return nil, err
 	}
 	if !bytes.Equal(magic, magicSource2) {
-		return nil, _errorf("unexpected magic: expected %s, got %s", magicSource2, magic)
+		return nil, fmt.Errorf("unexpected magic: expected %s, got %s", magicSource2, magic)
 	}
 
 	// Skip the next 8 bytes, which appear to be two int32s related to the size
@@ -107,7 +130,7 @@ func NewStreamParser(r io.Reader) (*Parser, error) {
 	parser.Callbacks.OnCSVCMsg_PacketEntities(parser.onCSVCMsg_PacketEntities)
 
 	// Maintains the value of parser.Tick
-	parser.Callbacks.OnCNETMsg_Tick(func(m *dota.CNETMsg_Tick) error {
+	parser.Callbacks.OnCNETMsg_Tick(func(m *deadlock.CNETMsg_Tick) error {
 		parser.NetTick = m.GetTick()
 		return nil
 	})
@@ -121,15 +144,16 @@ func (p *Parser) Start() (err error) {
 
 	defer p.afterStop()
 
-	defer func() {
-		if p := recover(); p != nil {
-			if e, ok := p.(error); ok {
-				err = e
-			} else {
-				err = fmt.Errorf("%v", p)
-			}
-		}
-	}()
+	// TODO: uncomment later, debugging parser atm
+	// defer func() {
+	// 	if p := recover(); p != nil {
+	// 		if e, ok := p.(error); ok {
+	// 			err = e
+	// 		} else {
+	// 			err = fmt.Errorf("%v", p)
+	// 		}
+	// 	}
+	// }()
 
 	// Loop through all outer messages until we're signaled to stop. Stopping
 	// happens when either the OnCDemoStop message is encountered or
@@ -142,14 +166,32 @@ func (p *Parser) Start() (err error) {
 		msg, err = p.readOuterMessage()
 		if err != nil {
 			if err == io.EOF {
+				p.Logger.Info("EOF")
 				err = nil
+			} else {
+				p.Logger.With("error", err).Error("issue reading outer message")
 			}
 			return
 		}
 
 		p.Tick = msg.tick
 
+		// TODO: DELETE ME
+		logMsg := fmt.Sprintf("==\n%s:\n%s", p.Callbacks.getDemoTypeName(msg.typeId), p.Callbacks.toDemoString(msg.typeId, msg.data))
+		itemLen := len(msg.data)
+		maxLen := 256
+		if len(logMsg) > maxLen {
+			logMsg = logMsg[:maxLen] + "..."
+		}
+		p.Logger.With(
+			"tick", msg.tick,
+			"len", itemLen,
+			"typeId", msg.typeId,
+			"name", p.Callbacks.getDemoTypeName(msg.typeId),
+		).Info("parsed outer message:\n" + logMsg + "\n==")
+
 		if err = p.Callbacks.callByDemoType(msg.typeId, msg.data); err != nil {
+			p.Logger.With("error", err, "typeid", msg.typeId, "tick", msg.tick).Error("encountered issue with callback")
 			return
 		}
 	}
@@ -201,8 +243,8 @@ func (p *Parser) readOuterMessage() (*outerMessage, error) {
 	}
 
 	// Extract the type and compressed flag out of the command
-	msgType := int32(command & ^dota.EDemoCommands_DEM_IsCompressed)
-	msgCompressed := (command & dota.EDemoCommands_DEM_IsCompressed) == dota.EDemoCommands_DEM_IsCompressed
+	msgType := int32(command & ^deadlock.EDemoCommands_DEM_IsCompressed)
+	msgCompressed := (command & deadlock.EDemoCommands_DEM_IsCompressed) == deadlock.EDemoCommands_DEM_IsCompressed
 
 	// Read the tick that the message corresponds with.
 	tick, err := p.stream.readVarUint32()
@@ -211,7 +253,7 @@ func (p *Parser) readOuterMessage() (*outerMessage, error) {
 	}
 
 	// This appears to actually be an int32, where a -1 means pre-game.
-	if tick == 4294967295 {
+	if tick == math.MaxUint32 {
 		tick = 0
 	}
 
