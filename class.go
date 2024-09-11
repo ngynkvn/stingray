@@ -88,7 +88,7 @@ func (p *Parser) updateInstanceBaseline() {
 	stringTable, ok := p.stringTables.GetTableByName("instancebaseline")
 	if !ok {
 		// TODO: Refactor out logging blocks
-		Dbg.Debug("Skipping updateInstanceBaseline",
+		_dbg.Debug("Skipping updateInstanceBaseline",
 			"reason", "no instancebaseline string table")
 
 		return

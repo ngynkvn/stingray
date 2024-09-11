@@ -210,14 +210,14 @@ func (p *Parser) FindEntityByHandle(handle uint64) *Entity {
 }
 
 // TODO: remove, as it is temporary for debugging purposes
-var dump *slog.Logger
+var _logdump *slog.Logger
 
 func init() {
-	f, err := os.Create("./dump.json")
+	f, err := os.Create("./tmp/dump.json")
 	if err != nil {
 		panic(err)
 	}
-	dump = slog.New(slog.NewJSONHandler(f, nil))
+	_logdump = slog.New(slog.NewJSONHandler(f, nil))
 }
 
 // FilterEntity finds entities by callback
@@ -264,7 +264,7 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 		op = EntityOpNone
 
 		cmd = r.readBits(2)
-		dump = dump.With("index", index, "cmd", cmd, "initial_position", r.position())
+		_logdump = _logdump.With("index", index, "cmd", cmd, "initial_position", r.position())
 		if cmd&0x01 == 0 {
 			if cmd&0x02 != 0 {
 				classId = int32(r.readBits(p.classIdSize))
@@ -289,7 +289,7 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 
 			} else {
 				if e = p.entities[index]; e == nil {
-					_panicf("unable to find existing entity %d", index)
+					_panicf("unable to find existing entity %d %d", index, cmd)
 				}
 
 				op = EntityOpUpdated
@@ -302,7 +302,7 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 			}
 		} else {
 			if e = p.entities[index]; e == nil {
-				_panicf("unable to find existing entity %d %d %d", index, classId, serial)
+				_panicf("unable to find existing entity %d %d", index, cmd)
 			}
 
 			if !e.active {

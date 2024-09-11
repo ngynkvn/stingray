@@ -1274,7 +1274,7 @@ func (c *Callbacks) callByDemoType(t int32, buf []byte) error {
 
 	}
 
-	Dbg.Warn("Demo type not found",
+	_dbg.Warn("Demo type not found",
 		"type", t)
 
 	return nil

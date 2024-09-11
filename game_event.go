@@ -81,7 +81,7 @@ func (e *GameEvent) GetString(name string) (string, error) {
 
 	// Make sure it's a string.
 	if k.GetType() != gameEventTypeString {
-		return "", _errorf("field %s: expected string, got %s", name, gameEventTypeNames[k.GetType()])
+		return "", fmt.Errorf("field %s: expected string, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValString(), nil
@@ -97,7 +97,7 @@ func (e *GameEvent) GetFloat32(name string) (float32, error) {
 
 	// Make sure it's a bool.
 	if k.GetType() != gameEventTypeFloat {
-		return 0.0, _errorf("field %s: expected float, got %s", name, gameEventTypeNames[k.GetType()])
+		return 0.0, fmt.Errorf("field %s: expected float, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValFloat(), nil
@@ -121,7 +121,7 @@ func (e *GameEvent) GetInt32(name string) (int32, error) {
 		return k.GetValByte(), nil
 	}
 
-	return 0, _errorf("field %s: expected int, got %s", name, gameEventTypeNames[k.GetType()])
+	return 0, fmt.Errorf("field %s: expected int, got %s", name, gameEventTypeNames[k.GetType()])
 }
 
 // Gets the bool value of a named field.
@@ -134,7 +134,7 @@ func (e *GameEvent) GetBool(name string) (bool, error) {
 
 	// Make sure it's a bool.
 	if k.GetType() != gameEventTypeBool {
-		return false, _errorf("field %s: expected bool, got %s", name, gameEventTypeNames[k.GetType()])
+		return false, fmt.Errorf("field %s: expected bool, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValBool(), nil
@@ -150,7 +150,7 @@ func (e *GameEvent) GetUint64(name string) (uint64, error) {
 
 	// Make sure it's a uint64.
 	if k.GetType() != gameEventTypeUint64 {
-		return 0, _errorf("field %s: expected uint64, got %s", name, gameEventTypeNames[k.GetType()])
+		return 0, fmt.Errorf("field %s: expected uint64, got %s", name, gameEventTypeNames[k.GetType()])
 	}
 
 	return k.GetValUint64(), nil
@@ -160,11 +160,11 @@ func (e *GameEvent) GetUint64(name string) (uint64, error) {
 func (e *GameEvent) getEventKey(name string) (*deadlock.CMsgSource1LegacyGameEventKeyT, error) {
 	f, ok := e.t.fields[name]
 	if !ok {
-		return nil, _errorf("field %s: missing", name)
+		return nil, fmt.Errorf("field %s: missing", name)
 	}
 
 	if f.i > len(e.m.GetKeys()) {
-		return nil, _errorf("field %s: %d out of range", name, f.i)
+		return nil, fmt.Errorf("field %s: %d out of range", name, f.i)
 	}
 
 	return e.m.GetKeys()[f.i], nil
@@ -218,7 +218,7 @@ func (p *Parser) onCMsgSource1LegacyGameEvent(m *deadlock.CMsgSource1LegacyGameE
 	// Look up the handler name by event id.
 	name, ok := p.gameEventNames[m.GetEventid()]
 	if !ok {
-		return _errorf("unknown event id: %d", m.GetEventid())
+		return fmt.Errorf("unknown event id: %d", m.GetEventid())
 	}
 
 	// Get the handlers for the event name. Return early if none.
@@ -230,7 +230,7 @@ func (p *Parser) onCMsgSource1LegacyGameEvent(m *deadlock.CMsgSource1LegacyGameE
 	// Get the type for the event.
 	t, ok := p.gameEventTypes[name]
 	if !ok {
-		return _errorf("unknown event type: %s", name)
+		return fmt.Errorf("unknown event type: %s", name)
 	}
 
 	// Create a GameEvent, offer to all handlers.

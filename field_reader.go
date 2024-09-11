@@ -14,7 +14,7 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 		name := strings.Join(s.getNameForFieldPath(fp, 0), ".")
 		typ := s.getTypeForFieldPath(fp, 0)
 		field := s.getFieldForFieldPath(fp, 0)
-		Dbg.Debug("Reading field",
+		_dbg.Debug("Reading field",
 			"position", r.position(),
 			"path", fp.String(),
 			"name", name,
@@ -23,7 +23,7 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 			"decoder", _nameof(decoder),
 			"encoder", field.encodeFlags,
 			"model", field.modelString())
-		dump.With(
+		_logdump.With(
 			"pos", r.position(),
 			"path", fp.String(),
 			"name", name,
@@ -51,7 +51,7 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 
 			fp2.release()
 
-			Dbg.Debug("Field value", "value", val)
+			_dbg.Debug("Field value", "value", val)
 		}
 
 		fp.release()

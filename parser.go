@@ -108,7 +108,7 @@ func NewStreamParser(r io.Reader, opts ...ParserOpt) (*Parser, error) {
 		return nil, err
 	}
 	if !bytes.Equal(magic, magicSource2) {
-		return nil, _errorf("unexpected magic: expected %s, got %s", magicSource2, magic)
+		return nil, fmt.Errorf("unexpected magic: expected %s, got %s", magicSource2, magic)
 	}
 
 	// Skip the next 8 bytes, which appear to be two int32s related to the size

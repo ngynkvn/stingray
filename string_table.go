@@ -129,7 +129,7 @@ func (p *Parser) onCSVCMsg_UpdateStringTable(m *deadlock.CSVCMsg_UpdateStringTab
 	}
 
 	// TODO: Refactor out logging blocks
-	Dbg.Debug("UpdateStringTable",
+	_dbg.Debug("UpdateStringTable",
 		"tick", p.Tick,
 		"name", t.name,
 		"changedEntries", m.GetNumChangedEntries(),

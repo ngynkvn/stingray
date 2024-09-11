@@ -3,7 +3,6 @@ package stingray
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log/slog"
 	"os"
 	"reflect"
@@ -17,19 +16,18 @@ import (
 )
 
 const (
-	TRACE    = slog.Level(-8)
-	DEBUG    = slog.LevelDebug
-	INFOInfo = slog.LevelInfo
-	WARN     = slog.LevelWarn
-	ERROR    = slog.LevelError
+	TRACE = slog.Level(-8)
+	DEBUG = slog.LevelDebug
+	INFO  = slog.LevelInfo
+	WARN  = slog.LevelWarn
+	ERROR = slog.LevelError
 )
 
 var (
 	Level = new(slog.LevelVar)
-	Dbg   = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+	_dbg  = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource: true,
 		Level:     Level,
-		NoColor:   false,
 	}))
 )
 
@@ -57,16 +55,6 @@ func atoi32(s string) (int32, error) {
 	return int32(n), nil
 }
 
-func _printf(format string, args ...interface{}) {
-	args = append([]interface{}{_caller(2)}, args...)
-	fmt.Printf("%s: "+format+"\n", args...)
-}
-
-// error with printf syntax
-func _errorf(format string, args ...interface{}) error {
-	return fmt.Errorf(format, args...)
-}
-
 // panic with printf syntax
 func _panicf(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
@@ -81,14 +69,14 @@ func _dump(label string, args ...interface{}) {
 // dumps a given byte buffer to the given fixture filename
 func _dump_fixture(filename string, buf []byte) {
 	fmt.Printf("writing fixture %s...\n", filename)
-	if err := ioutil.WriteFile("./fixtures/"+filename, buf, 0644); err != nil {
+	if err := os.WriteFile("./fixtures/"+filename, buf, 0644); err != nil {
 		panic(err)
 	}
 }
 
 // reads a byte buffer from the given fixture filename
 func _read_fixture(filename string) []byte {
-	buf, err := ioutil.ReadFile("./fixtures/" + filename)
+	buf, err := os.ReadFile("./fixtures/" + filename)
 	if err != nil {
 		panic(err)
 	}

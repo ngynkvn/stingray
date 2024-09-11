@@ -1,11 +1,13 @@
 package stingray
 
+import "fmt"
+
 // Decompress a Valve LZSS compressed buffer
 func unlzss(buf []byte) ([]byte, error) {
 	r := newReader(buf)
 
 	if s := r.readStringN(4); s != "LZSS" {
-		return nil, _errorf("expected LZSS header, got %s", s)
+		return nil, fmt.Errorf("expected LZSS header, got %s", s)
 	}
 
 	size := int(r.readLeUint32())
@@ -40,7 +42,7 @@ func unlzss(buf []byte) ([]byte, error) {
 	}
 
 	if len(out) != size {
-		return nil, _errorf("expected %d bytes, got %d", size, len(out))
+		return nil, fmt.Errorf("expected %d bytes, got %d", size, len(out))
 	}
 
 	return out, nil
