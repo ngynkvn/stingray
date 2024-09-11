@@ -2,6 +2,8 @@ package stingray
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/ngynkvn/stingray/deadlock"
 )
@@ -207,6 +209,17 @@ func (p *Parser) FindEntityByHandle(handle uint64) *Entity {
 	return e
 }
 
+// TODO: remove, as it is temporary for debugging purposes
+var dump *slog.Logger
+
+func init() {
+	f, err := os.Create("./dump.json")
+	if err != nil {
+		panic(err)
+	}
+	dump = slog.New(slog.NewJSONHandler(f, nil))
+}
+
 // FilterEntity finds entities by callback
 func (p *Parser) FilterEntity(fb func(*Entity) bool) []*Entity {
 	entities := make([]*Entity, 0, 0)
@@ -245,9 +258,13 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 
 	for ; updates > 0; updates-- {
 		index += int32(r.readUBitVar()) + 1
+		if index == 85 {
+			debugLevel = 10
+		}
 		op = EntityOpNone
 
 		cmd = r.readBits(2)
+		dump = dump.With("index", index, "cmd", cmd, "initial_position", r.position())
 		if cmd&0x01 == 0 {
 			if cmd&0x02 != 0 {
 				classId = int32(r.readBits(p.classIdSize))
@@ -285,7 +302,7 @@ func (p *Parser) onCSVCMsg_PacketEntities(m *deadlock.CSVCMsg_PacketEntities) er
 			}
 		} else {
 			if e = p.entities[index]; e == nil {
-				_panicf("unable to find existing entity %d", index)
+				_panicf("unable to find existing entity %d %d %d", index, classId, serial)
 			}
 
 			if !e.active {

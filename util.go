@@ -48,8 +48,7 @@ func v(level uint) bool {
 // printf only if debugging
 func _debugf(format string, args ...interface{}) {
 	if v(1) {
-		args = append([]interface{}{_caller(2)}, args...)
-		fmt.Printf("%s: "+format+"\n", args...)
+		fmt.Printf(format+"\n", args...)
 	}
 }
 

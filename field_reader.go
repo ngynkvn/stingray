@@ -15,6 +15,7 @@ func readFields(r *reader, s *serializer, state *fieldState) {
 			typ := s.getTypeForFieldPath(fp, 0)
 			field := s.getFieldForFieldPath(fp, 0)
 			_debugf("pos=%s path=%s name=%s ser=%s type=%s decoder=%s model=%s", r.position(), fp.String(), name, s.name, typ, _nameof(decoder), field.modelString())
+			dump.With("pos", r.position(), "path", fp.String(), "name", name, "type", typ, "decoder", _nameof(decoder), "ser", s.name, "encoder", field.encoder).Info("")
 		}
 
 		val := decoder(r)
